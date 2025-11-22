@@ -1,15 +1,36 @@
 "use client";
 
-import { MapPin, FlaskConical, Sparkles } from "lucide-react";
+import { MapPin, FlaskConical, Sparkles, Leaf, Droplets, Zap, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 
-export function BrandPromise() {
+interface BrandPromiseProps {
+  content?: {
+    promises?: Array<{
+      icon?: string;
+      title?: string;
+      description?: string;
+    }>;
+  };
+}
+
+// Icon mapping
+const iconMap: Record<string, typeof MapPin> = {
+  MapPin,
+  FlaskConical,
+  Sparkles,
+  Leaf,
+  Droplets,
+  Zap,
+  Shield,
+};
+
+export function BrandPromise({ content }: BrandPromiseProps = {}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const promises = [
+  const defaultPromises = [
     {
       icon: MapPin,
       title: "Made in Canada",
@@ -26,6 +47,12 @@ export function BrandPromise() {
       description: "Premium results without premium pricing.",
     },
   ];
+
+  const promises = content?.promises?.map(p => ({
+    icon: p.icon ? (iconMap[p.icon] || MapPin) : MapPin,
+    title: p.title || "",
+    description: p.description || "",
+  })) || defaultPromises;
 
   return (
     <section ref={ref} className="py-24 bg-[#F9F9F6]">
@@ -45,7 +72,11 @@ export function BrandPromise() {
                 transition={{ duration: 0.5, delay: index * 0.2 + 0.3 }}
                 className="inline-flex items-center justify-center w-16 h-16 bg-[#BFC8B3]/20 rounded-full"
               >
-                <promise.icon className="w-8 h-8 text-[#8B9A7F]" />
+                {typeof promise.icon === 'function' ? (
+                  <promise.icon className="w-8 h-8 text-[#8B9A7F]" />
+                ) : (
+                  <MapPin className="w-8 h-8 text-[#8B9A7F]" />
+                )}
               </motion.div>
               <h3 className="text-gray-900">{promise.title}</h3>
               <p className="text-gray-600">{promise.description}</p>

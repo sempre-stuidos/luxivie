@@ -2,10 +2,48 @@
 
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { Leaf } from "lucide-react";
+import { Leaf, MapPin, FlaskConical, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  content?: {
+    badge?: {
+      icon?: string;
+      text?: string;
+    };
+    title?: string;
+    subtitle?: string;
+    primaryCta?: {
+      label?: string;
+      href?: string;
+    };
+    secondaryCta?: {
+      label?: string;
+      href?: string;
+    };
+    heroImage?: string;
+    accentImage?: string;
+  };
+}
+
+// Icon mapping for badge
+const iconMap: Record<string, typeof Leaf> = {
+  Leaf,
+  MapPin,
+  FlaskConical,
+  Sparkles,
+};
+
+export function HeroSection({ content }: HeroSectionProps = {}) {
+  const badge = content?.badge || { icon: 'Leaf', text: 'Made in Canada' };
+  const title = content?.title || 'Clean Beauty That Works—Made With Care in Canada';
+  const subtitle = content?.subtitle || 'Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.';
+  const primaryCta = content?.primaryCta || { label: 'Shop Bestsellers', href: '#products' };
+  const secondaryCta = content?.secondaryCta || { label: 'See Our Ingredients', href: '#ingredients' };
+  const heroImage = content?.heroImage || 'https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080';
+  const accentImage = content?.accentImage || 'https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080';
+  
+  const BadgeIcon = badge.icon ? (iconMap[badge.icon] || Leaf) : Leaf;
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background gradient */}
@@ -25,15 +63,17 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
           {/* Left: Text Content */}
           <div className="text-center lg:text-left space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-[#BFC8B3]/30"
-            >
-              <Leaf className="w-4 h-4 text-[#BFC8B3]" />
-              <span className="text-sm text-gray-700">Made in Canada</span>
-            </motion.div>
+            {badge.text && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-[#BFC8B3]/30"
+              >
+                <BadgeIcon className="w-4 h-4 text-[#BFC8B3]" />
+                <span className="text-sm text-gray-700">{badge.text}</span>
+              </motion.div>
+            )}
             
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
@@ -41,7 +81,7 @@ export function HeroSection() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="text-5xl lg:text-7xl text-gray-900 leading-tight"
             >
-              Clean Beauty That Works—Made With Care in Canada
+              {title}
             </motion.h1>
             
             <motion.p
@@ -50,7 +90,7 @@ export function HeroSection() {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="text-xl text-gray-600 max-w-xl"
             >
-              Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.
+              {subtitle}
             </motion.p>
 
             <motion.div
@@ -59,19 +99,33 @@ export function HeroSection() {
               transition={{ duration: 0.8, delay: 0.7 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Button 
-                size="lg" 
-                className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-6 rounded-full shadow-lg"
-              >
-                Shop Bestsellers
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
-              >
-                See Our Ingredients
-              </Button>
+              {primaryCta?.label && (
+                <Button 
+                  size="lg" 
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-6 rounded-full shadow-lg"
+                  asChild={!!primaryCta.href}
+                >
+                  {primaryCta.href ? (
+                    <a href={primaryCta.href}>{primaryCta.label}</a>
+                  ) : (
+                    <span>{primaryCta.label}</span>
+                  )}
+                </Button>
+              )}
+              {secondaryCta?.label && (
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
+                  asChild={!!secondaryCta.href}
+                >
+                  {secondaryCta.href ? (
+                    <a href={secondaryCta.href}>{secondaryCta.label}</a>
+                  ) : (
+                    <span>{secondaryCta.label}</span>
+                  )}
+                </Button>
+              )}
             </motion.div>
           </div>
 
@@ -84,7 +138,7 @@ export function HeroSection() {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080"
+                src={heroImage}
                 alt="Luxivie beauty products on marble"
                 className="w-full h-[600px] object-cover"
               />
@@ -93,18 +147,20 @@ export function HeroSection() {
             </div>
 
             {/* Floating botanical accent */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 0.8, scale: 1 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
-              className="absolute -bottom-8 -left-8 w-32 h-32"
-            >
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                alt="Eucalyptus accent"
-                className="w-full h-full object-cover rounded-full shadow-xl"
-              />
-            </motion.div>
+            {accentImage && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 0.8, scale: 1 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
+                className="absolute -bottom-8 -left-8 w-32 h-32"
+              >
+                <ImageWithFallback
+                  src={accentImage}
+                  alt="Eucalyptus accent"
+                  className="w-full h-full object-cover rounded-full shadow-xl"
+                />
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>

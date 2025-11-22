@@ -6,11 +6,26 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 
-export function CustomerReviews() {
+interface CustomerReviewsProps {
+  content?: {
+    title?: string;
+    rating?: number;
+    subtitle?: string;
+    reviews?: Array<{
+      quote?: string;
+      name?: string;
+      location?: string;
+      avatar?: string;
+      initials?: string;
+    }>;
+  };
+}
+
+export function CustomerReviews({ content }: CustomerReviewsProps = {}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const reviews = [
+  const defaultReviews = [
     {
       quote: "My hair has never felt this full. The rosemary oil has become my holy grail product!",
       name: "Sarah M.",
@@ -34,6 +49,11 @@ export function CustomerReviews() {
     },
   ];
 
+  const reviews = content?.reviews || defaultReviews;
+  const title = content?.title || "Customer Love";
+  const rating = content?.rating || 5;
+  const subtitle = content?.subtitle || "Trusted by 10,000+ happy customers across Canada";
+
   return (
     <section id="reviews" ref={ref} className="py-24 bg-white">
       <div className="container mx-auto px-4">
@@ -46,10 +66,10 @@ export function CustomerReviews() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              Customer Love
+              {title}
             </h2>
             <div className="flex items-center justify-center gap-1 mb-2">
-              {[...Array(5)].map((_, i) => (
+              {[...Array(rating)].map((_, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, scale: 0 }}
@@ -60,7 +80,7 @@ export function CustomerReviews() {
                 </motion.div>
               ))}
             </div>
-            <p className="text-gray-600">Trusted by 10,000+ happy customers across Canada</p>
+            <p className="text-gray-600">{subtitle}</p>
           </motion.div>
 
           {/* Reviews Grid */}
@@ -82,19 +102,19 @@ export function CustomerReviews() {
                 </div>
 
                 {/* Quote */}
-                <p className="text-gray-700 italic">"{review.quote}"</p>
+                <p className="text-gray-700 italic">"{review.quote || ""}"</p>
 
                 {/* Author */}
                 <div className="flex items-center gap-4 pt-4 border-t border-gray-300">
                   <Avatar>
                     <AvatarImage src={review.avatar} />
                     <AvatarFallback className="bg-[#BFC8B3] text-white">
-                      {review.initials}
+                      {review.initials || ""}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-gray-900">{review.name}</p>
-                    <p className="text-sm text-gray-600">{review.location}</p>
+                    <p className="text-gray-900">{review.name || ""}</p>
+                    <p className="text-sm text-gray-600">{review.location || ""}</p>
                   </div>
                 </div>
               </motion.div>

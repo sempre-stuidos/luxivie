@@ -6,37 +6,49 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 
-export function IngredientTransparency() {
+interface IngredientTransparencyProps {
+  content?: {
+    title?: string;
+    subtitle?: string;
+    ingredients?: Array<{
+      icon?: string;
+      name?: string;
+      benefit?: string;
+    }>;
+    ctaLabel?: string;
+  };
+}
+
+// Icon mapping
+const iconMap: Record<string, typeof Leaf> = {
+  Leaf,
+  Droplets,
+  Zap,
+  Shield,
+  Sparkles,
+};
+
+export function IngredientTransparency({ content }: IngredientTransparencyProps = {}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const ingredients = [
-    {
-      icon: Leaf,
-      name: "Rosemary Extract",
-      benefit: "Scalp stimulation",
-    },
-    {
-      icon: Droplets,
-      name: "Peppermint Oil",
-      benefit: "Cooling + soothing",
-    },
-    {
-      icon: Zap,
-      name: "Biotin",
-      benefit: "Strengthening",
-    },
-    {
-      icon: Shield,
-      name: "Keratin",
-      benefit: "Smoothing",
-    },
-    {
-      icon: Sparkles,
-      name: "Natural Oils Blend",
-      benefit: "Nourish + shine",
-    },
+  const defaultIngredients = [
+    { icon: Leaf, name: "Rosemary Extract", benefit: "Scalp stimulation" },
+    { icon: Droplets, name: "Peppermint Oil", benefit: "Cooling + soothing" },
+    { icon: Zap, name: "Biotin", benefit: "Strengthening" },
+    { icon: Shield, name: "Keratin", benefit: "Smoothing" },
+    { icon: Sparkles, name: "Natural Oils Blend", benefit: "Nourish + shine" },
   ];
+
+  const ingredients = content?.ingredients?.map(ing => ({
+    icon: ing.icon ? (iconMap[ing.icon] || Leaf) : Leaf,
+    name: ing.name || "",
+    benefit: ing.benefit || "",
+  })) || defaultIngredients;
+
+  const title = content?.title || "Pure, Tested, and Transparent";
+  const subtitle = content?.subtitle || "Every ingredient is chosen for a reason";
+  const ctaLabel = content?.ctaLabel || "See Full Ingredient Breakdown";
 
   return (
     <section id="ingredients" ref={ref} className="py-24 bg-gradient-to-b from-[#F9F9F6] to-white">
@@ -50,10 +62,10 @@ export function IngredientTransparency() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              Pure, Tested, and Transparent
+              {title}
             </h2>
             <p className="text-xl text-gray-600">
-              Every ingredient is chosen for a reason
+              {subtitle}
             </p>
           </motion.div>
 
@@ -69,7 +81,11 @@ export function IngredientTransparency() {
                 className="bg-white/60 backdrop-blur-md border border-[#BFC8B3]/30 rounded-2xl p-6 text-center space-y-3 hover:shadow-lg transition-all hover:border-[#BFC8B3]"
               >
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-[#BFC8B3]/20 rounded-full">
-                  <ingredient.icon className="w-6 h-6 text-[#8B9A7F]" />
+                  {typeof ingredient.icon === 'function' ? (
+                    <ingredient.icon className="w-6 h-6 text-[#8B9A7F]" />
+                  ) : (
+                    <Leaf className="w-6 h-6 text-[#8B9A7F]" />
+                  )}
                 </div>
                 <h4 className="text-gray-900">{ingredient.name}</h4>
                 <p className="text-sm text-gray-600">{ingredient.benefit}</p>
@@ -88,7 +104,7 @@ export function IngredientTransparency() {
               variant="outline"
               className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
             >
-              See Full Ingredient Breakdown
+              {ctaLabel}
             </Button>
           </motion.div>
         </div>

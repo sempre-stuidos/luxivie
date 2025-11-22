@@ -7,9 +7,44 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 
-export function FinalCTA() {
+interface FinalCTAProps {
+  content?: {
+    title?: string;
+    subtitle?: string;
+    primaryCta?: {
+      label?: string;
+      href?: string;
+    };
+    accentImage?: string;
+    trustBadges?: Array<{
+      icon?: string;
+      text?: string;
+    }>;
+  };
+}
+
+// Icon mapping
+const iconMap: Record<string, typeof Package> = {
+  Package,
+  Shield,
+};
+
+export function FinalCTA({ content }: FinalCTAProps = {}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-200px" });
+
+  const title = content?.title || "Ready for stronger, healthier hair?";
+  const subtitle = content?.subtitle || "Join thousands of Canadians who've discovered the power of clean, botanical beauty";
+  const primaryCta = content?.primaryCta || { label: "Shop Luxivie Now", href: "#products" };
+  const accentImage = content?.accentImage || "https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080";
+  const defaultTrustBadges = [
+    { icon: Package, text: "Fast shipping across Canada" },
+    { icon: Shield, text: "Trusted by 10,000+ customers" },
+  ];
+  const trustBadges = content?.trustBadges?.map(badge => ({
+    icon: badge.icon ? (iconMap[badge.icon] || Package) : Package,
+    text: badge.text || "",
+  })) || defaultTrustBadges;
 
   return (
     <section ref={ref} className="py-32 bg-gradient-to-b from-white to-[#F9F9F6] relative overflow-hidden">
@@ -34,7 +69,7 @@ export function FinalCTA() {
           >
             <div className="w-24 h-24 rounded-full overflow-hidden shadow-xl">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                src={accentImage}
                 alt="Eucalyptus"
                 className="w-full h-full object-cover"
               />
@@ -49,7 +84,7 @@ export function FinalCTA() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-5xl lg:text-6xl text-gray-900"
             >
-              Ready for stronger, healthier hair?
+              {title}
             </motion.h2>
             
             <motion.p
@@ -58,7 +93,7 @@ export function FinalCTA() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-xl text-gray-600 max-w-2xl mx-auto"
             >
-              Join thousands of Canadians who've discovered the power of clean, botanical beauty
+              {subtitle}
             </motion.p>
 
             <motion.div
@@ -67,31 +102,47 @@ export function FinalCTA() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Button 
-                size="lg" 
-                className="bg-gray-900 hover:bg-gray-800 text-white px-10 py-7 rounded-full shadow-xl group"
-              >
-                Shop Luxivie Now
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              {primaryCta?.label && (
+                <Button 
+                  size="lg" 
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-10 py-7 rounded-full shadow-xl group"
+                  asChild={!!primaryCta.href}
+                >
+                  {primaryCta.href ? (
+                    <a href={primaryCta.href}>
+                      {primaryCta.label}
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </a>
+                  ) : (
+                    <span>
+                      {primaryCta.label}
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  )}
+                </Button>
+              )}
             </motion.div>
 
             {/* Trust badges */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-gray-600"
-            >
-              <div className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-[#8B9A7F]" />
-                <span>Fast shipping across Canada</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#8B9A7F]" />
-                <span>Trusted by 10,000+ customers</span>
-              </div>
-            </motion.div>
+            {trustBadges.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-gray-600"
+              >
+                {trustBadges.map((badge, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    {typeof badge.icon === 'function' ? (
+                      <badge.icon className="w-5 h-5 text-[#8B9A7F]" />
+                    ) : (
+                      <Package className="w-5 h-5 text-[#8B9A7F]" />
+                    )}
+                    <span>{badge.text}</span>
+                  </div>
+                ))}
+              </motion.div>
+            )}
           </div>
         </div>
       </div>

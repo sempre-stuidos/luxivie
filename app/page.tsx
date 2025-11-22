@@ -1,28 +1,56 @@
 import { Navigation } from "@/components/Navigation";
-import { HeroSection } from "@/components/HeroSection";
-import { BrandPromise } from "@/components/BrandPromise";
-import { IngredientTransparency } from "@/components/IngredientTransparency";
-import { FeaturedProducts } from "@/components/FeaturedProducts";
-import { BrandStory } from "@/components/BrandStory";
-import { CustomerReviews } from "@/components/CustomerReviews";
-import { HowToUse } from "@/components/HowToUse";
-import { Sustainability } from "@/components/Sustainability";
-import { FinalCTA } from "@/components/FinalCTA";
+import DynamicSection from "@/components/dynamic-section";
+import { getPageBySlug, getPageSections } from "@/lib/pages";
+import { validatePreviewToken } from "@/lib/preview";
 
-export default function Home() {
+interface HomeProps {
+  searchParams: Promise<{ token?: string; page?: string }>
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams
+  const previewToken = params.token
+  const pageSlug = params.page || 'home'
+  
+  // Get business slug from environment (this is the business slug, not org slug)
+  const businessSlug = process.env.NEXT_PUBLIC_ORG_SLUG || 'default'
+  
+  // Get the page
+  const page = await getPageBySlug(businessSlug, pageSlug)
+  
+  // If no page found, show default static content
+  if (!page) {
+    return (
+      <div className="min-h-screen bg-[#F9F9F6]">
+        <Navigation />
+        <div className="p-8 text-center">
+          <p className="text-muted-foreground">Page not found. Please configure your pages in the dashboard.</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Validate preview token if provided
+  let useDraft = false
+  if (previewToken) {
+    const validation = await validatePreviewToken(previewToken, undefined, page.id)
+    useDraft = validation.valid
+  }
+
+  // Get sections for this page
+  const sections = await getPageSections(page.id, useDraft, previewToken)
+
   return (
     <div className="min-h-screen bg-[#F9F9F6]">
       <Navigation />
-      <HeroSection />
-      <BrandPromise />
-      <IngredientTransparency />
-      <FeaturedProducts />
-      <BrandStory />
-      <CustomerReviews />
-      <HowToUse />
-      <Sustainability />
-      <FinalCTA />
+      {sections.map((section) => (
+        <DynamicSection
+          key={section.id}
+          component={section.component}
+          content={section.published_content || {}}
+        />
+      ))}
     </div>
-  );
+  )
 }
 

@@ -5,42 +5,49 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 
-export function Sustainability() {
+interface SustainabilityProps {
+  content?: {
+    title?: string;
+    subtitle?: string;
+    features?: Array<{
+      icon?: string;
+      title?: string;
+      description?: string;
+    }>;
+  };
+}
+
+// Icon mapping
+const iconMap: Record<string, typeof Leaf> = {
+  Leaf,
+  Droplet,
+  Heart,
+  Award,
+  Recycle,
+  Palette,
+};
+
+export function Sustainability({ content }: SustainabilityProps = {}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const features = [
-    {
-      icon: Leaf,
-      title: "Clean Ingredients",
-      description: "No harmful chemicals",
-    },
-    {
-      icon: Droplet,
-      title: "No Parabens / No Sulfates",
-      description: "Gentle on hair & scalp",
-    },
-    {
-      icon: Heart,
-      title: "Cruelty-Free",
-      description: "Never tested on animals",
-    },
-    {
-      icon: Award,
-      title: "GMP Certified",
-      description: "Quality you can trust",
-    },
-    {
-      icon: Recycle,
-      title: "Recyclable Packaging",
-      description: "Better for the planet",
-    },
-    {
-      icon: Palette,
-      title: "Safe for Color-Treated Hair",
-      description: "Protects your investment",
-    },
+  const defaultFeatures = [
+    { icon: Leaf, title: "Clean Ingredients", description: "No harmful chemicals" },
+    { icon: Droplet, title: "No Parabens / No Sulfates", description: "Gentle on hair & scalp" },
+    { icon: Heart, title: "Cruelty-Free", description: "Never tested on animals" },
+    { icon: Award, title: "GMP Certified", description: "Quality you can trust" },
+    { icon: Recycle, title: "Recyclable Packaging", description: "Better for the planet" },
+    { icon: Palette, title: "Safe for Color-Treated Hair", description: "Protects your investment" },
   ];
+
+  const features = content?.features?.map(f => ({
+    icon: f.icon ? (iconMap[f.icon] || Leaf) : Leaf,
+    title: f.title || "",
+    description: f.description || "",
+  })) || defaultFeatures;
+
+  const title = content?.title || "Sustainability + Quality";
+  const subtitle = content?.subtitle || "Good for your hair, good for the planet";
 
   return (
     <section ref={ref} className="py-24 bg-white">
@@ -54,10 +61,10 @@ export function Sustainability() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              Sustainability + Quality
+              {title}
             </h2>
             <p className="text-xl text-gray-600">
-              Good for your hair, good for the planet
+              {subtitle}
             </p>
           </motion.div>
 
@@ -78,7 +85,11 @@ export function Sustainability() {
                   transition={{ duration: 0.6, delay: index * 0.1 + 0.3, type: "spring" }}
                   className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#BFC8B3]/20 to-[#BFC8B3]/10 rounded-full"
                 >
-                  <feature.icon className="w-8 h-8 text-[#8B9A7F]" />
+                  {typeof feature.icon === 'function' ? (
+                    <feature.icon className="w-8 h-8 text-[#8B9A7F]" />
+                  ) : (
+                    <Leaf className="w-8 h-8 text-[#8B9A7F]" />
+                  )}
                 </motion.div>
                 <h3 className="text-gray-900">{feature.title}</h3>
                 <p className="text-sm text-gray-600">{feature.description}</p>

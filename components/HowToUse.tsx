@@ -6,36 +6,49 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 
-export function HowToUse() {
+interface HowToUseProps {
+  content?: {
+    title?: string;
+    subtitle?: string;
+    steps?: Array<{
+      number?: string;
+      icon?: string;
+      title?: string;
+      description?: string;
+    }>;
+    ctaLabel?: string;
+  };
+}
+
+// Icon mapping
+const iconMap: Record<string, typeof Droplets> = {
+  Droplets,
+  HandMetal,
+  Clock,
+  Sparkles,
+};
+
+export function HowToUse({ content }: HowToUseProps = {}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const steps = [
-    {
-      number: "1",
-      icon: Droplets,
-      title: "Apply 2–3 drops to scalp",
-      description: "Focus on areas that need extra care",
-    },
-    {
-      number: "2",
-      icon: HandMetal,
-      title: "Massage gently",
-      description: "Use circular motions to stimulate blood flow",
-    },
-    {
-      number: "3",
-      icon: Clock,
-      title: "Leave overnight or 30 minutes",
-      description: "Let the botanicals work their magic",
-    },
-    {
-      number: "4",
-      icon: Sparkles,
-      title: "Rinse with Luxivie Shampoo",
-      description: "For best results, use our complete system",
-    },
+  const defaultSteps = [
+    { number: "1", icon: Droplets, title: "Apply 2–3 drops to scalp", description: "Focus on areas that need extra care" },
+    { number: "2", icon: HandMetal, title: "Massage gently", description: "Use circular motions to stimulate blood flow" },
+    { number: "3", icon: Clock, title: "Leave overnight or 30 minutes", description: "Let the botanicals work their magic" },
+    { number: "4", icon: Sparkles, title: "Rinse with Luxivie Shampoo", description: "For best results, use our complete system" },
   ];
+
+  const steps = content?.steps?.map(step => ({
+    number: step.number || "",
+    icon: step.icon ? (iconMap[step.icon] || Droplets) : Droplets,
+    title: step.title || "",
+    description: step.description || "",
+  })) || defaultSteps;
+
+  const title = content?.title || "Your Hair Care Ritual";
+  const subtitle = content?.subtitle || "Simple steps for transformative results";
+  const ctaLabel = content?.ctaLabel || "See Full Routine";
 
   return (
     <section ref={ref} className="py-24 bg-gradient-to-b from-white to-[#F9F9F6]">
@@ -49,10 +62,10 @@ export function HowToUse() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              Your Hair Care Ritual
+              {title}
             </h2>
             <p className="text-xl text-gray-600">
-              Simple steps for transformative results
+              {subtitle}
             </p>
           </motion.div>
 
@@ -79,7 +92,11 @@ export function HowToUse() {
                 {/* Icon */}
                 <div className="bg-white rounded-3xl p-8 shadow-md border border-gray-200/50 space-y-4 pt-12">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-[#BFC8B3]/20 rounded-full mx-auto">
-                    <step.icon className="w-8 h-8 text-[#8B9A7F]" />
+                    {typeof step.icon === 'function' ? (
+                      <step.icon className="w-8 h-8 text-[#8B9A7F]" />
+                    ) : (
+                      <Droplets className="w-8 h-8 text-[#8B9A7F]" />
+                    )}
                   </div>
                   
                   <h3 className="text-gray-900">{step.title}</h3>
@@ -110,7 +127,7 @@ export function HowToUse() {
               variant="outline"
               className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
             >
-              See Full Routine
+              {ctaLabel}
             </Button>
           </motion.div>
         </div>
