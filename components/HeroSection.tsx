@@ -64,15 +64,15 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
           {/* Left: Text Content */}
           <div className="text-center lg:text-left space-y-8">
             {badge.text && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-[#BFC8B3]/30"
-              >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-[#BFC8B3]/30"
+            >
                 <BadgeIcon className="w-4 h-4 text-[#BFC8B3]" />
                 <span className="text-sm text-gray-700">{badge.text}</span>
-              </motion.div>
+            </motion.div>
             )}
             
             <motion.h1
@@ -100,9 +100,9 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               {primaryCta?.label && (
-                <Button 
-                  size="lg" 
-                  className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-6 rounded-full shadow-lg"
+              <Button 
+                size="lg" 
+                className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-6 rounded-full shadow-lg"
                   asChild={!!primaryCta.href}
                 >
                   {primaryCta.href ? (
@@ -110,13 +110,13 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
                   ) : (
                     <span>{primaryCta.label}</span>
                   )}
-                </Button>
+              </Button>
               )}
               {secondaryCta?.label && (
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
                   asChild={!!secondaryCta.href}
                 >
                   {secondaryCta.href ? (
@@ -124,7 +124,7 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
                   ) : (
                     <span>{secondaryCta.label}</span>
                   )}
-                </Button>
+              </Button>
               )}
             </motion.div>
           </div>
@@ -148,18 +148,18 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
 
             {/* Floating botanical accent */}
             {accentImage && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 0.8, scale: 1 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-                className="absolute -bottom-8 -left-8 w-32 h-32"
-              >
-                <ImageWithFallback
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 0.8, scale: 1 }}
+              transition={{ duration: 0.8, delay: 1.2 }}
+              className="absolute -bottom-8 -left-8 w-32 h-32"
+            >
+              <ImageWithFallback
                   src={accentImage}
-                  alt="Eucalyptus accent"
-                  className="w-full h-full object-cover rounded-full shadow-xl"
-                />
-              </motion.div>
+                alt="Eucalyptus accent"
+                className="w-full h-full object-cover rounded-full shadow-xl"
+              />
+            </motion.div>
             )}
           </motion.div>
         </div>

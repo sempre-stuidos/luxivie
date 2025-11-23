@@ -9,6 +9,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOi
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Server-side Supabase client
+// For public landing pages, we only need to read cookies, not set them
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies()
   
@@ -20,10 +21,9 @@ export async function createServerSupabaseClient() {
         getAll() {
           return cookieStore.getAll()
         },
-        setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options)
-          })
+        setAll() {
+          // No-op: Public landing pages don't need to set cookies
+          // Cookies can only be modified in Server Actions or Route Handlers
         },
       },
     }

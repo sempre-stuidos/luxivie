@@ -103,9 +103,9 @@ export function FinalCTA({ content }: FinalCTAProps = {}) {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               {primaryCta?.label && (
-                <Button 
-                  size="lg" 
-                  className="bg-gray-900 hover:bg-gray-800 text-white px-10 py-7 rounded-full shadow-xl group"
+              <Button 
+                size="lg" 
+                className="bg-gray-900 hover:bg-gray-800 text-white px-10 py-7 rounded-full shadow-xl group"
                   asChild={!!primaryCta.href}
                 >
                   {primaryCta.href ? (
@@ -116,32 +116,32 @@ export function FinalCTA({ content }: FinalCTAProps = {}) {
                   ) : (
                     <span>
                       {primaryCta.label}
-                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </span>
                   )}
-                </Button>
+              </Button>
               )}
             </motion.div>
 
             {/* Trust badges */}
             {trustBadges.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-gray-600"
-              >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+              className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-gray-600"
+            >
                 {trustBadges.map((badge, index) => (
                   <div key={index} className="flex items-center gap-2">
                     {typeof badge.icon === 'function' ? (
                       <badge.icon className="w-5 h-5 text-[#8B9A7F]" />
                     ) : (
-                      <Package className="w-5 h-5 text-[#8B9A7F]" />
+                <Package className="w-5 h-5 text-[#8B9A7F]" />
                     )}
                     <span>{badge.text}</span>
-                  </div>
+              </div>
                 ))}
-              </motion.div>
+            </motion.div>
             )}
           </div>
         </div>

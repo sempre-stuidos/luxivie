@@ -86,7 +86,7 @@ export function Sustainability({ content }: SustainabilityProps = {}) {
                   className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#BFC8B3]/20 to-[#BFC8B3]/10 rounded-full"
                 >
                   {typeof feature.icon === 'function' ? (
-                    <feature.icon className="w-8 h-8 text-[#8B9A7F]" />
+                  <feature.icon className="w-8 h-8 text-[#8B9A7F]" />
                   ) : (
                     <Leaf className="w-8 h-8 text-[#8B9A7F]" />
                   )}

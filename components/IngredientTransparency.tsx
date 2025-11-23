@@ -82,7 +82,7 @@ export function IngredientTransparency({ content }: IngredientTransparencyProps 
               >
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-[#BFC8B3]/20 rounded-full">
                   {typeof ingredient.icon === 'function' ? (
-                    <ingredient.icon className="w-6 h-6 text-[#8B9A7F]" />
+                  <ingredient.icon className="w-6 h-6 text-[#8B9A7F]" />
                   ) : (
                     <Leaf className="w-6 h-6 text-[#8B9A7F]" />
                   )}

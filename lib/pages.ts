@@ -44,7 +44,18 @@ export async function getPageBySlug(
       .eq('slug', businessSlug)
       .single()
 
-    if (businessError || !business) {
+    if (businessError) {
+      console.error('[getPageBySlug] Business lookup error:', {
+        businessSlug,
+        error: businessError.message,
+        code: businessError.code,
+        details: businessError.details,
+      })
+      return null
+    }
+
+    if (!business) {
+      console.error('[getPageBySlug] Business not found:', businessSlug)
       return null
     }
 
@@ -56,7 +67,22 @@ export async function getPageBySlug(
       .eq('slug', pageSlug)
       .single()
 
-    if (pageError || !page) {
+    if (pageError) {
+      console.error('[getPageBySlug] Page lookup error:', {
+        businessId: business.id,
+        pageSlug,
+        error: pageError.message,
+        code: pageError.code,
+        details: pageError.details,
+      })
+      return null
+    }
+
+    if (!page) {
+      console.error('[getPageBySlug] Page not found:', {
+        businessId: business.id,
+        pageSlug,
+      })
       return null
     }
 

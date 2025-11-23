@@ -93,7 +93,7 @@ export function HowToUse({ content }: HowToUseProps = {}) {
                 <div className="bg-white rounded-3xl p-8 shadow-md border border-gray-200/50 space-y-4 pt-12">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-[#BFC8B3]/20 rounded-full mx-auto">
                     {typeof step.icon === 'function' ? (
-                      <step.icon className="w-8 h-8 text-[#8B9A7F]" />
+                    <step.icon className="w-8 h-8 text-[#8B9A7F]" />
                     ) : (
                       <Droplets className="w-8 h-8 text-[#8B9A7F]" />
                     )}

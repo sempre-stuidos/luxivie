@@ -73,7 +73,7 @@ export function BrandPromise({ content }: BrandPromiseProps = {}) {
                 className="inline-flex items-center justify-center w-16 h-16 bg-[#BFC8B3]/20 rounded-full"
               >
                 {typeof promise.icon === 'function' ? (
-                  <promise.icon className="w-8 h-8 text-[#8B9A7F]" />
+                <promise.icon className="w-8 h-8 text-[#8B9A7F]" />
                 ) : (
                   <MapPin className="w-8 h-8 text-[#8B9A7F]" />
                 )}
