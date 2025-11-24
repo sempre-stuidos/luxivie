@@ -47,20 +47,22 @@ export function BrandStory({ content }: BrandStoryProps = {}) {
         <div className="max-w-5xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Image */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-              transition={{ duration: 0.8 }}
-              className="relative"
-            >
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                <ImageWithFallback
-                  src={image}
-                  alt="Natural botanicals"
-                  className="w-full h-[500px] object-cover"
-                />
-              </div>
-            </motion.div>
+            <div data-section-component-key="image">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+                transition={{ duration: 0.8 }}
+                className="relative"
+              >
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+                  <ImageWithFallback
+                    src={image}
+                    alt="Natural botanicals"
+                    className="w-full h-[500px] object-cover"
+                  />
+                </div>
+              </motion.div>
+            </div>
 
             {/* Right: Story */}
             <motion.div
@@ -69,11 +71,13 @@ export function BrandStory({ content }: BrandStoryProps = {}) {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="space-y-6"
             >
-              <h2 className="text-4xl lg:text-5xl text-gray-900">
-                {title}
-              </h2>
+              <div data-section-component-key="title">
+                <h2 className="text-4xl lg:text-5xl text-gray-900">
+                  {title}
+                </h2>
+              </div>
               
-              <div className="space-y-4 text-gray-600">
+              <div data-section-component-key="paragraphs" className="space-y-4 text-gray-600">
                 {paragraphs.map((paragraph, index) => (
                 <motion.p
                     key={index}
@@ -86,18 +90,20 @@ export function BrandStory({ content }: BrandStoryProps = {}) {
                 ))}
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-              >
-                <Button 
-                  variant="outline"
-                  className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
+              <div data-section-component-key="ctaLabel">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
                 >
-                  {ctaLabel}
-                </Button>
-              </motion.div>
+                  <Button 
+                    variant="outline"
+                    className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
+                  >
+                    {ctaLabel}
+                  </Button>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
         </div>

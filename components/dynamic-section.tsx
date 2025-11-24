@@ -7,6 +7,7 @@ import { CustomerReviews } from './CustomerReviews'
 import { HowToUse } from './HowToUse'
 import { Sustainability } from './Sustainability'
 import { FinalCTA } from './FinalCTA'
+import { normalizeContent } from '@/lib/normalize-content'
 
 interface DynamicSectionProps {
   component: string
@@ -14,33 +15,35 @@ interface DynamicSectionProps {
 }
 
 export default function DynamicSection({ component, content }: DynamicSectionProps) {
+  const normalizedContent = normalizeContent(content) as Record<string, any>
+
   switch (component) {
     case 'HeroSection':
-      return <HeroSection content={content} />
+      return <HeroSection content={normalizedContent} />
     
     case 'BrandPromise':
-      return <BrandPromise content={content} />
+      return <BrandPromise content={normalizedContent} />
     
     case 'IngredientTransparency':
-      return <IngredientTransparency content={content} />
+      return <IngredientTransparency content={normalizedContent} />
     
     case 'FeaturedProducts':
-      return <FeaturedProducts content={content} />
+      return <FeaturedProducts content={normalizedContent} />
     
     case 'BrandStory':
-      return <BrandStory content={content} />
+      return <BrandStory content={normalizedContent} />
     
     case 'CustomerReviews':
-      return <CustomerReviews content={content} />
+      return <CustomerReviews content={normalizedContent} />
     
     case 'HowToUse':
-      return <HowToUse content={content} />
+      return <HowToUse content={normalizedContent} />
     
     case 'Sustainability':
-      return <Sustainability content={content} />
+      return <Sustainability content={normalizedContent} />
     
     case 'FinalCTA':
-      return <FinalCTA content={content} />
+      return <FinalCTA content={normalizedContent} />
     
     default:
       return (

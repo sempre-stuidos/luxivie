@@ -61,16 +61,20 @@ export function FeaturedProducts({ content }: FeaturedProductsProps = {}) {
             transition={{ duration: 0.7 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              {title}
-            </h2>
-            <p className="text-xl text-gray-600">
-              {subtitle}
-            </p>
+            <div data-section-component-key="title">
+              <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
+                {title}
+              </h2>
+            </div>
+            <div data-section-component-key="subtitle">
+              <p className="text-xl text-gray-600">
+                {subtitle}
+              </p>
+            </div>
           </motion.div>
 
           {/* Products Grid */}
-          <div className="grid md:grid-cols-3 gap-8">
+          <div data-section-component-key="products" className="grid md:grid-cols-3 gap-8">
             {products.map((product, index) => (
               <motion.div
                 key={index}

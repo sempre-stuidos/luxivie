@@ -61,16 +61,20 @@ export function HowToUse({ content }: HowToUseProps = {}) {
             transition={{ duration: 0.7 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              {title}
-            </h2>
-            <p className="text-xl text-gray-600">
-              {subtitle}
-            </p>
+            <div data-section-component-key="title">
+              <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
+                {title}
+              </h2>
+            </div>
+            <div data-section-component-key="subtitle">
+              <p className="text-xl text-gray-600">
+                {subtitle}
+              </p>
+            </div>
           </motion.div>
 
           {/* Steps Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <div data-section-component-key="steps" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {steps.map((step, index) => (
               <motion.div
                 key={index}
@@ -117,19 +121,21 @@ export function HowToUse({ content }: HowToUseProps = {}) {
           </div>
 
           {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.7, delay: 0.8 }}
-            className="text-center"
-          >
-            <Button 
-              variant="outline"
-              className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
+          <div data-section-component-key="ctaLabel">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.8 }}
+              className="text-center"
             >
-              {ctaLabel}
-            </Button>
-          </motion.div>
+              <Button 
+                variant="outline"
+                className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
+              >
+                {ctaLabel}
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

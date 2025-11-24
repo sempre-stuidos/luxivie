@@ -65,26 +65,32 @@ export function CustomerReviews({ content }: CustomerReviewsProps = {}) {
             transition={{ duration: 0.7 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              {title}
-            </h2>
-            <div className="flex items-center justify-center gap-1 mb-2">
-              {[...Array(rating)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-                  transition={{ duration: 0.3, delay: i * 0.1 }}
-                >
-                  <Star className="w-6 h-6 fill-[#BFC8B3] text-[#BFC8B3]" />
-                </motion.div>
-              ))}
+            <div data-section-component-key="title">
+              <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
+                {title}
+              </h2>
             </div>
-            <p className="text-gray-600">{subtitle}</p>
+            <div data-section-component-key="rating">
+              <div className="flex items-center justify-center gap-1 mb-2">
+                {[...Array(rating)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.1 }}
+                  >
+                    <Star className="w-6 h-6 fill-[#BFC8B3] text-[#BFC8B3]" />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+            <div data-section-component-key="subtitle">
+              <p className="text-gray-600">{subtitle}</p>
+            </div>
           </motion.div>
 
           {/* Reviews Grid */}
-          <div className="grid md:grid-cols-3 gap-8">
+          <div data-section-component-key="reviews" className="grid md:grid-cols-3 gap-8">
             {reviews.map((review, index) => (
               <motion.div
                 key={index}

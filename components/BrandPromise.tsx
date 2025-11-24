@@ -57,7 +57,7 @@ export function BrandPromise({ content }: BrandPromiseProps = {}) {
   return (
     <section ref={ref} className="py-24 bg-[#F9F9F6]">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+        <div data-section-component-key="promises" className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
           {promises.map((promise, index) => (
             <motion.div
               key={index}

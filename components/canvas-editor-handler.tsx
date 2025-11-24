@@ -7,7 +7,7 @@ interface CanvasEditorHandlerProps {
 }
 
 export function CanvasEditorHandler({ sections }: CanvasEditorHandlerProps) {
-  // Add click event listeners to sections
+  // Add click event listeners to sections and components
   React.useEffect(() => {
     const handleSectionClick = (e: MouseEvent, sectionId: string, sectionKey: string) => {
       e.stopPropagation()
@@ -20,26 +20,46 @@ export function CanvasEditorHandler({ sections }: CanvasEditorHandlerProps) {
       }
     }
 
+    const handleComponentClick = (e: MouseEvent, sectionId: string, sectionKey: string, componentKey: string) => {
+      e.stopPropagation()
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'component-click',
+          sectionId,
+          sectionKey,
+          componentKey,
+        }, '*')
+      }
+    }
+
     const cleanupFunctions: Array<() => void> = []
 
     sections.forEach((section) => {
-      const element = document.querySelector(`[data-section-key="${section.key}"]`)
-      if (element) {
+      const sectionElement = document.querySelector(`[data-section-key="${section.key}"]`)
+      if (sectionElement) {
         // Get section key from element's data attribute as fallback
-        const elementKey = element.getAttribute('data-section-key') || section.key
-        const elementId = element.getAttribute('data-section-id') || section.id
+        const elementKey = sectionElement.getAttribute('data-section-key') || section.key
+        const elementId = sectionElement.getAttribute('data-section-id') || section.id
         
-        // Add click listener
-        const clickHandler = (e: MouseEvent) => {
+        // Add click listener for section (only if not clicking on a component)
+        const sectionClickHandler = (e: MouseEvent) => {
+          // Check if click target is within a component
+          const target = e.target as HTMLElement
+          const componentElement = target.closest('[data-section-component-key]')
+          if (componentElement) {
+            // Component click will be handled separately, don't trigger section click
+            return
+          }
+          
           // Use element's data attributes to ensure we have the correct values
-          const key = element.getAttribute('data-section-key') || section.key
-          const id = element.getAttribute('data-section-id') || section.id
+          const key = sectionElement.getAttribute('data-section-key') || section.key
+          const id = sectionElement.getAttribute('data-section-id') || section.id
           handleSectionClick(e, id, key)
         }
-        element.addEventListener('click', clickHandler)
+        sectionElement.addEventListener('click', sectionClickHandler)
         
         // Add visual indication that section is clickable
-        const htmlElement = element as HTMLElement
+        const htmlElement = sectionElement as HTMLElement
         htmlElement.style.cursor = 'pointer'
         htmlElement.style.transition = 'opacity 0.2s'
         
@@ -50,16 +70,53 @@ export function CanvasEditorHandler({ sections }: CanvasEditorHandlerProps) {
         const leaveHandler = () => {
           htmlElement.style.opacity = '1'
         }
-        element.addEventListener('mouseenter', hoverHandler)
-        element.addEventListener('mouseleave', leaveHandler)
+        sectionElement.addEventListener('mouseenter', hoverHandler)
+        sectionElement.addEventListener('mouseleave', leaveHandler)
 
         cleanupFunctions.push(() => {
-          element.removeEventListener('click', clickHandler)
-          element.removeEventListener('mouseenter', hoverHandler)
-          element.removeEventListener('mouseleave', leaveHandler)
+          sectionElement.removeEventListener('click', sectionClickHandler)
+          sectionElement.removeEventListener('mouseenter', hoverHandler)
+          sectionElement.removeEventListener('mouseleave', leaveHandler)
           htmlElement.style.cursor = ''
           htmlElement.style.opacity = ''
           htmlElement.style.transition = ''
+        })
+
+        // Add click listeners for components within this section
+        const componentElements = sectionElement.querySelectorAll('[data-section-component-key]')
+        componentElements.forEach((componentElement) => {
+          const componentKey = componentElement.getAttribute('data-section-component-key')
+          if (componentKey) {
+            const componentClickHandler = (e: MouseEvent) => {
+              const key = sectionElement.getAttribute('data-section-key') || section.key
+              const id = sectionElement.getAttribute('data-section-id') || section.id
+              handleComponentClick(e, id, key, componentKey)
+            }
+            componentElement.addEventListener('click', componentClickHandler)
+            
+            // Add visual indication that component is clickable
+            const componentHtmlElement = componentElement as HTMLElement
+            componentHtmlElement.style.cursor = 'pointer'
+            componentHtmlElement.style.transition = 'opacity 0.2s'
+            
+            const componentHoverHandler = () => {
+              componentHtmlElement.style.opacity = '0.9'
+            }
+            const componentLeaveHandler = () => {
+              componentHtmlElement.style.opacity = '1'
+            }
+            componentElement.addEventListener('mouseenter', componentHoverHandler)
+            componentElement.addEventListener('mouseleave', componentLeaveHandler)
+
+            cleanupFunctions.push(() => {
+              componentElement.removeEventListener('click', componentClickHandler)
+              componentElement.removeEventListener('mouseenter', componentHoverHandler)
+              componentElement.removeEventListener('mouseleave', componentLeaveHandler)
+              componentHtmlElement.style.cursor = ''
+              componentHtmlElement.style.opacity = ''
+              componentHtmlElement.style.transition = ''
+            })
+          }
         })
       }
     })

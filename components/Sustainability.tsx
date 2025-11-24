@@ -60,16 +60,20 @@ export function Sustainability({ content }: SustainabilityProps = {}) {
             transition={{ duration: 0.7 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
-              {title}
-            </h2>
-            <p className="text-xl text-gray-600">
-              {subtitle}
-            </p>
+            <div data-section-component-key="title">
+              <h2 className="text-4xl lg:text-5xl text-gray-900 mb-4">
+                {title}
+              </h2>
+            </div>
+            <div data-section-component-key="subtitle">
+              <p className="text-xl text-gray-600">
+                {subtitle}
+              </p>
+            </div>
           </motion.div>
 
           {/* Features Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div data-section-component-key="features" className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={index}

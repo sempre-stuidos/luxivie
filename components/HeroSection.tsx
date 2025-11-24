@@ -35,13 +35,33 @@ const iconMap: Record<string, typeof Leaf> = {
 };
 
 export function HeroSection({ content }: HeroSectionProps = {}) {
-  const badge = content?.badge || { icon: 'Leaf', text: 'Made in Canada' };
-  const title = content?.title || 'Clean Beauty That Works—Made With Care in Canada';
-  const subtitle = content?.subtitle || 'Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.';
-  const primaryCta = content?.primaryCta || { label: 'Shop Bestsellers', href: '#products' };
-  const secondaryCta = content?.secondaryCta || { label: 'See Our Ingredients', href: '#ingredients' };
-  const heroImage = content?.heroImage || 'https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080';
-  const accentImage = content?.accentImage || 'https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080';
+  // Safely extract values, handling cases where content might be incorrectly structured
+  const getStringValue = (value: unknown): string => {
+    if (typeof value === 'string') return value
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      // If it's an object, try to extract a string value (fallback for incorrectly structured data)
+      const obj = value as Record<string, unknown>
+      if (typeof obj.value === 'string') return obj.value
+      if (typeof obj.text === 'string') return obj.text
+      if (typeof obj.label === 'string') return obj.label
+    }
+    return ''
+  }
+
+  const getObjectValue = <T,>(value: unknown, defaultValue: T): T => {
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      return value as T
+    }
+    return defaultValue
+  }
+
+  const badge = getObjectValue(content?.badge, { icon: 'Leaf', text: 'Made in Canada' });
+  const title = getStringValue(content?.title) || 'Clean Beauty That Works—Made With Care in Canada';
+  const subtitle = getStringValue(content?.subtitle) || 'Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.';
+  const primaryCta = getObjectValue(content?.primaryCta, { label: 'Shop Bestsellers', href: '#products' });
+  const secondaryCta = getObjectValue(content?.secondaryCta, { label: 'See Our Ingredients', href: '#ingredients' });
+  const heroImage = getStringValue(content?.heroImage) || 'https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080';
+  const accentImage = getStringValue(content?.accentImage) || 'https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080';
   
   const BadgeIcon = badge.icon ? (iconMap[badge.icon] || Leaf) : Leaf;
   return (
@@ -64,34 +84,40 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
           {/* Left: Text Content */}
           <div className="text-center lg:text-left space-y-8">
             {badge.text && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-[#BFC8B3]/30"
-            >
-                <BadgeIcon className="w-4 h-4 text-[#BFC8B3]" />
-                <span className="text-sm text-gray-700">{badge.text}</span>
-            </motion.div>
+            <div data-section-component-key="badge">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-[#BFC8B3]/30"
+              >
+                  <BadgeIcon className="w-4 h-4 text-[#BFC8B3]" />
+                  <span className="text-sm text-gray-700">{badge.text}</span>
+              </motion.div>
+            </div>
             )}
             
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-5xl lg:text-7xl text-gray-900 leading-tight"
-            >
-              {title}
-            </motion.h1>
+            <div data-section-component-key="title">
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="text-5xl lg:text-7xl text-gray-900 leading-tight"
+              >
+                {title}
+              </motion.h1>
+            </div>
             
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-xl text-gray-600 max-w-xl"
-            >
-              {subtitle}
-            </motion.p>
+            <div data-section-component-key="subtitle">
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="text-xl text-gray-600 max-w-xl"
+              >
+                {subtitle}
+              </motion.p>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -100,31 +126,35 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               {primaryCta?.label && (
-              <Button 
-                size="lg" 
-                className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-6 rounded-full shadow-lg"
-                  asChild={!!primaryCta.href}
-                >
-                  {primaryCta.href ? (
-                    <a href={primaryCta.href}>{primaryCta.label}</a>
-                  ) : (
-                    <span>{primaryCta.label}</span>
-                  )}
-              </Button>
+              <div data-section-component-key="primaryCta">
+                <Button 
+                  size="lg" 
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-6 rounded-full shadow-lg"
+                    asChild={!!primaryCta.href}
+                  >
+                    {primaryCta.href ? (
+                      <a href={primaryCta.href}>{primaryCta.label}</a>
+                    ) : (
+                      <span>{primaryCta.label}</span>
+                    )}
+                </Button>
+              </div>
               )}
               {secondaryCta?.label && (
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
-                  asChild={!!secondaryCta.href}
-                >
-                  {secondaryCta.href ? (
-                    <a href={secondaryCta.href}>{secondaryCta.label}</a>
-                  ) : (
-                    <span>{secondaryCta.label}</span>
-                  )}
-              </Button>
+              <div data-section-component-key="secondaryCta">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-gray-300 hover:border-[#BFC8B3] hover:bg-white px-8 py-6 rounded-full"
+                    asChild={!!secondaryCta.href}
+                  >
+                    {secondaryCta.href ? (
+                      <a href={secondaryCta.href}>{secondaryCta.label}</a>
+                    ) : (
+                      <span>{secondaryCta.label}</span>
+                    )}
+                </Button>
+              </div>
               )}
             </motion.div>
           </div>
@@ -136,7 +166,7 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
             transition={{ duration: 1, delay: 0.4 }}
             className="relative"
           >
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+            <div data-section-component-key="heroImage" className="relative rounded-3xl overflow-hidden shadow-2xl">
               <ImageWithFallback
                 src={heroImage}
                 alt="Luxivie beauty products on marble"
@@ -148,18 +178,20 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
 
             {/* Floating botanical accent */}
             {accentImage && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 0.8, scale: 1 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
-              className="absolute -bottom-8 -left-8 w-32 h-32"
-            >
-              <ImageWithFallback
-                  src={accentImage}
-                alt="Eucalyptus accent"
-                className="w-full h-full object-cover rounded-full shadow-xl"
-              />
-            </motion.div>
+            <div data-section-component-key="accentImage">
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 0.8, scale: 1 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
+                className="absolute -bottom-8 -left-8 w-32 h-32"
+              >
+                <ImageWithFallback
+                    src={accentImage}
+                  alt="Eucalyptus accent"
+                  className="w-full h-full object-cover rounded-full shadow-xl"
+                />
+              </motion.div>
+            </div>
             )}
           </motion.div>
         </div>

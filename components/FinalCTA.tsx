@@ -61,87 +61,97 @@ export function FinalCTA({ content }: FinalCTAProps = {}) {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Eucalyptus accent image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-            transition={{ duration: 0.8, type: "spring", stiffness: 200 }}
-            className="flex justify-center mb-8"
-          >
-            <div className="w-24 h-24 rounded-full overflow-hidden shadow-xl">
-              <ImageWithFallback
-                src={accentImage}
-                alt="Eucalyptus"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </motion.div>
+          <div data-section-component-key="accentImage">
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
+              transition={{ duration: 0.8, type: "spring", stiffness: 200 }}
+              className="flex justify-center mb-8"
+            >
+              <div className="w-24 h-24 rounded-full overflow-hidden shadow-xl">
+                <ImageWithFallback
+                  src={accentImage}
+                  alt="Eucalyptus"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </motion.div>
+          </div>
 
           {/* Main CTA content */}
           <div className="text-center space-y-8">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-5xl lg:text-6xl text-gray-900"
-            >
-              {title}
-            </motion.h2>
+            <div data-section-component-key="title">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-5xl lg:text-6xl text-gray-900"
+              >
+                {title}
+              </motion.h2>
+            </div>
             
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
-            >
-              {subtitle}
-            </motion.p>
+            <div data-section-component-key="subtitle">
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="text-xl text-gray-600 max-w-2xl mx-auto"
+              >
+                {subtitle}
+              </motion.p>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              {primaryCta?.label && (
-              <Button 
-                size="lg" 
-                className="bg-gray-900 hover:bg-gray-800 text-white px-10 py-7 rounded-full shadow-xl group"
-                  asChild={!!primaryCta.href}
-                >
-                  {primaryCta.href ? (
-                    <a href={primaryCta.href}>
-                      {primaryCta.label}
-                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </a>
-                  ) : (
-                    <span>
-                      {primaryCta.label}
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  )}
-              </Button>
-              )}
-            </motion.div>
+            <div data-section-component-key="primaryCta">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+              >
+                {primaryCta?.label && (
+                <Button 
+                  size="lg" 
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-10 py-7 rounded-full shadow-xl group"
+                    asChild={!!primaryCta.href}
+                  >
+                    {primaryCta.href ? (
+                      <a href={primaryCta.href}>
+                        {primaryCta.label}
+                        <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </a>
+                    ) : (
+                      <span>
+                        {primaryCta.label}
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    )}
+                </Button>
+                )}
+              </motion.div>
+            </div>
 
             {/* Trust badges */}
             {trustBadges.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-gray-600"
-            >
-                {trustBadges.map((badge, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    {typeof badge.icon === 'function' ? (
-                      <badge.icon className="w-5 h-5 text-[#8B9A7F]" />
-                    ) : (
-                <Package className="w-5 h-5 text-[#8B9A7F]" />
-                    )}
-                    <span>{badge.text}</span>
-              </div>
-                ))}
-            </motion.div>
+            <div data-section-component-key="trustBadges">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-gray-600"
+              >
+                  {trustBadges.map((badge, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      {typeof badge.icon === 'function' ? (
+                        <badge.icon className="w-5 h-5 text-[#8B9A7F]" />
+                      ) : (
+                  <Package className="w-5 h-5 text-[#8B9A7F]" />
+                      )}
+                      <span>{badge.text}</span>
+                </div>
+                  ))}
+              </motion.div>
+            </div>
             )}
           </div>
         </div>

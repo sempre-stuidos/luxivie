@@ -100,7 +100,7 @@ export async function getPageSections(
   pageId: string,
   useDraft: boolean = false,
   previewToken?: string
-): Promise<PageSection[]> {
+): Promise<{ sections: PageSection[]; useDraft: boolean }> {
   try {
     const supabase = await createServerSupabaseClient()
     
@@ -119,40 +119,37 @@ export async function getPageSections(
 
     if (error) {
       console.error('Error fetching sections:', error)
-      return []
+      return { sections: [], useDraft: shouldUseDraft }
     }
 
     if (!data) {
-      return []
+      return { sections: [], useDraft: shouldUseDraft }
     }
 
     const sections = data as PageSection[]
     
-    // If using draft/preview, return sections with draft_content as published_content
     if (shouldUseDraft) {
-      return sections.map(section => ({
-        ...section,
-        published_content: section.draft_content,
-      }))
+      // When previewing, return sections exactly as stored so the caller can use draft_content directly
+      return { sections, useDraft: true }
     }
 
-    // For public view, return sections that have published_content
-    // This includes sections with status 'published' or 'dirty' (unpublished changes)
-    // Sections with 'dirty' status will show published_content, not draft_content
-    return sections
-      .filter(s => {
-        // Include sections that are published OR have unpublished changes (dirty)
-        // Exclude only sections that are draft-only (never published)
-        return (s.status === 'published' || s.status === 'dirty') && s.published_content
-      })
-      .map(section => ({
+    // For public view, include sections that have been published or have dirty (unpublished) changes
+    const publishedSections = sections.filter(section => {
+      const hasStatus = section.status === 'published' || section.status === 'dirty'
+      return hasStatus && (section.published_content || section.draft_content)
+    })
+
+    return {
+      sections: publishedSections.map(section => ({
         ...section,
-        // Always use published_content for public view, even if section has draft changes
-        published_content: section.published_content || {},
-      }))
+        // Ensure we at least fall back to draft content if published content is empty
+        published_content: section.published_content || section.draft_content || {},
+      })),
+      useDraft: false,
+    }
   } catch (error) {
     console.error('Error in getPageSections:', error)
-    return []
+    return { sections: [], useDraft: useDraft }
   }
 }
 
