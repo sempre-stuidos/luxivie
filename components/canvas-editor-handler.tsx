@@ -42,7 +42,7 @@ export function CanvasEditorHandler({ sections }: CanvasEditorHandlerProps) {
         const elementId = sectionElement.getAttribute('data-section-id') || section.id
         
         // Add click listener for section (only if not clicking on a component)
-        const sectionClickHandler = (e: MouseEvent) => {
+        const sectionClickHandler = (e: Event) => {
           // Check if click target is within a component
           const target = e.target as HTMLElement
           const componentElement = target.closest('[data-section-component-key]')
@@ -54,7 +54,7 @@ export function CanvasEditorHandler({ sections }: CanvasEditorHandlerProps) {
           // Use element's data attributes to ensure we have the correct values
           const key = sectionElement.getAttribute('data-section-key') || section.key
           const id = sectionElement.getAttribute('data-section-id') || section.id
-          handleSectionClick(e, id, key)
+          handleSectionClick(e as MouseEvent, id, key)
         }
         sectionElement.addEventListener('click', sectionClickHandler)
         
@@ -87,10 +87,10 @@ export function CanvasEditorHandler({ sections }: CanvasEditorHandlerProps) {
         componentElements.forEach((componentElement) => {
           const componentKey = componentElement.getAttribute('data-section-component-key')
           if (componentKey) {
-            const componentClickHandler = (e: MouseEvent) => {
+            const componentClickHandler = (e: Event) => {
               const key = sectionElement.getAttribute('data-section-key') || section.key
               const id = sectionElement.getAttribute('data-section-id') || section.id
-              handleComponentClick(e, id, key, componentKey)
+              handleComponentClick(e as MouseEvent, id, key, componentKey)
             }
             componentElement.addEventListener('click', componentClickHandler)
             
