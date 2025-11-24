@@ -6,17 +6,25 @@ const isPrimitive = (value: unknown): value is Primitive =>
   typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
 
 const tryExtractPrimitive = (obj: Record<string, unknown>, parentKey?: string): Primitive | undefined => {
+  // Don't extract primitives from objects that have multiple keys (they're meant to be objects)
+  const keys = Object.keys(obj)
+  if (keys.length > 1) {
+    return undefined
+  }
+
   if (parentKey && parentKey in obj && isPrimitive(obj[parentKey])) {
     return obj[parentKey]
   }
 
   for (const key of PRIMITIVE_CANDIDATE_KEYS) {
     if (key in obj && isPrimitive(obj[key])) {
-      return obj[key]
+      // Only extract if this is the only key, or if it's a wrapper object
+      if (keys.length === 1) {
+        return obj[key]
+      }
     }
   }
 
-  const keys = Object.keys(obj)
   if (keys.length === 1 && isPrimitive(obj[keys[0]])) {
     return obj[keys[0]] as Primitive
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Leaf, MapPin, FlaskConical, Sparkles } from "lucide-react";
@@ -55,13 +56,63 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
     return defaultValue
   }
 
-  const badge = getObjectValue(content?.badge, { icon: 'Leaf', text: 'Made in Canada' });
-  const title = getStringValue(content?.title) || 'Clean Beauty That Works—Made With Care in Canada';
-  const subtitle = getStringValue(content?.subtitle) || 'Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.';
-  const primaryCta = getObjectValue(content?.primaryCta, { label: 'Shop Bestsellers', href: '#products' });
-  const secondaryCta = getObjectValue(content?.secondaryCta, { label: 'See Our Ingredients', href: '#ingredients' });
-  const heroImage = getStringValue(content?.heroImage) || 'https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080';
-  const accentImage = getStringValue(content?.accentImage) || 'https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080';
+  // Ensure content is an object, not a string or other type
+  const normalizedContent = React.useMemo(() => {
+    if (!content) {
+      console.warn('[HeroSection] No content provided')
+      return {}
+    }
+    if (typeof content === 'string') {
+      console.warn('[HeroSection] Content is a string, expected object:', content)
+      return {}
+    }
+    if (typeof content === 'object' && !Array.isArray(content)) {
+      const contentObj = content as Record<string, unknown>
+      // Debug: log content in iframe context
+      if (typeof window !== 'undefined' && window.parent !== window) {
+        console.log('[HeroSection] Content in iframe:', {
+          keys: Object.keys(contentObj),
+          hasTitle: !!contentObj.title,
+          hasSubtitle: !!contentObj.subtitle,
+          hasBadge: !!contentObj.badge,
+          content: contentObj
+        })
+      }
+      return contentObj
+    }
+    console.warn('[HeroSection] Content is not an object:', typeof content, content)
+    return {}
+  }, [content])
+
+  const badge = getObjectValue(normalizedContent?.badge, { icon: 'Leaf', text: 'Made in Canada' });
+  
+  // Check if content has meaningful data (not just empty object or empty strings)
+  const hasMeaningfulContent = React.useMemo(() => {
+    if (!normalizedContent || typeof normalizedContent !== 'object') return false
+    const keys = Object.keys(normalizedContent)
+    if (keys.length === 0) return false
+    // Check if at least one key has a non-empty value
+    return keys.some(key => {
+      const value = normalizedContent[key]
+      if (value === null || value === undefined) return false
+      if (typeof value === 'string' && value.trim() !== '') return true
+      if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0) return true
+      if (Array.isArray(value) && value.length > 0) return true
+      return false
+    })
+  }, [normalizedContent])
+  
+  const titleValue = getStringValue(normalizedContent?.title)
+  const title = titleValue || 'Clean Beauty That Works—Made With Care in Canada';
+  const subtitleValue = getStringValue(normalizedContent?.subtitle)
+  const subtitle = subtitleValue || 'Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.';
+  const primaryCta = getObjectValue(normalizedContent?.primaryCta, { label: 'Shop Bestsellers', href: '#products' });
+  const secondaryCta = getObjectValue(normalizedContent?.secondaryCta, { label: 'See Our Ingredients', href: '#ingredients' });
+  const heroImageValue = getStringValue(normalizedContent?.heroImage)
+  // Use null instead of empty string for images to avoid browser warnings
+  const heroImage = heroImageValue || 'https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080';
+  const accentImageValue = getStringValue(normalizedContent?.accentImage)
+  const accentImage = accentImageValue || 'https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080';
   
   const BadgeIcon = badge.icon ? (iconMap[badge.icon] || Leaf) : Leaf;
   return (
@@ -166,6 +217,7 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
             transition={{ duration: 1, delay: 0.4 }}
             className="relative"
           >
+            {heroImage && (
             <div data-section-component-key="heroImage" className="relative rounded-3xl overflow-hidden shadow-2xl">
               <ImageWithFallback
                 src={heroImage}
@@ -175,6 +227,7 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
               {/* Soft overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
             </div>
+            )}
 
             {/* Floating botanical accent */}
             {accentImage && (

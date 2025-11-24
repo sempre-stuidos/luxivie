@@ -49,9 +49,75 @@ export default async function Home({ searchParams }: HomeProps) {
     <div className="min-h-screen bg-[#F9F9F6]">
       <Navigation />
       {sections.map((section) => {
-        const content = resolvedUseDraft
-          ? section.draft_content || section.published_content || {}
-          : section.published_content || section.draft_content || {}
+        // Helper function to check if content has meaningful data
+        const hasContent = (content: any): boolean => {
+          if (!content) return false
+          if (typeof content !== 'object') return false
+          if (Array.isArray(content)) return content.length > 0
+          const keys = Object.keys(content)
+          if (keys.length === 0) return false
+          // Check if at least one key has a non-empty value
+          return keys.some(key => {
+            const value = content[key]
+            if (value === null || value === undefined) return false
+            if (typeof value === 'string' && value.trim() === '') return false
+            if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return false
+            return true
+          })
+        }
+
+        // When in draft mode, prioritize draft_content; when in published mode, use published_content
+        // Only fall back if the primary content is empty/null or has no meaningful data
+        let content: Record<string, any>
+        if (resolvedUseDraft) {
+          // In draft/preview mode: try draft_content first, fall back to published_content
+          if (hasContent(section.draft_content)) {
+            content = section.draft_content
+          } else if (hasContent(section.published_content)) {
+            content = section.published_content
+          } else {
+            content = {}
+          }
+        } else {
+          // In published mode: try published_content first, fall back to draft_content
+          if (hasContent(section.published_content)) {
+            content = section.published_content
+          } else if (hasContent(section.draft_content)) {
+            content = section.draft_content
+          } else {
+            content = {}
+          }
+        }
+
+        // Special handling for HeroSection: if content looks like just a badge object, 
+        // it means the content was incorrectly extracted - use published_content as fallback
+        if (section.component === 'HeroSection') {
+          const contentKeys = Object.keys(content)
+          // If content only has 'icon' and 'text', it's just the badge, not full content
+          if (contentKeys.length === 2 && contentKeys.includes('icon') && contentKeys.includes('text')) {
+            console.warn('[page.tsx] HeroSection content appears to be just badge, using published_content fallback')
+            // Try to get the full content from published_content
+            if (hasContent(section.published_content)) {
+              content = section.published_content
+            } else if (hasContent(section.draft_content) && Object.keys(section.draft_content).length > 2) {
+              content = section.draft_content
+            }
+          }
+        }
+
+        // Debug logging for HeroSection in iframe context
+        if (section.component === 'HeroSection' && previewToken) {
+          console.log('[page.tsx] HeroSection content selection:', {
+            sectionKey: section.key,
+            resolvedUseDraft,
+            hasDraftContent: hasContent(section.draft_content),
+            hasPublishedContent: hasContent(section.published_content),
+            draftContentKeys: section.draft_content ? Object.keys(section.draft_content) : [],
+            publishedContentKeys: section.published_content ? Object.keys(section.published_content) : [],
+            selectedContentKeys: Object.keys(content),
+            selectedContent: content
+          })
+        }
 
         return (
           <section
