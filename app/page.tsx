@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import DynamicSection from "@/components/dynamic-section";
+import { CanvasEditorHandler } from "@/components/canvas-editor-handler";
 import { getPageBySlug, getPageSections } from "@/lib/pages";
 import { validatePreviewToken } from "@/lib/preview";
 
@@ -44,12 +45,18 @@ export default async function Home({ searchParams }: HomeProps) {
     <div className="min-h-screen bg-[#F9F9F6]">
       <Navigation />
       {sections.map((section) => (
-        <DynamicSection
+        <section
           key={section.id}
+          data-section-key={section.key}
+          data-section-id={section.id}
+        >
+          <DynamicSection
           component={section.component}
           content={section.published_content || {}}
         />
+        </section>
       ))}
+      <CanvasEditorHandler sections={sections.map(s => ({ id: s.id, key: s.key }))} />
     </div>
   )
 }
