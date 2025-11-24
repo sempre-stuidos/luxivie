@@ -26,6 +26,19 @@ const iconMap: Record<string, typeof MapPin> = {
   Shield,
 };
 
+const getStringValue = (value: unknown, fallback = ''): string => {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const obj = value as Record<string, unknown>
+    const candidateKeys = ['value', 'text', 'label', 'title', 'name']
+    for (const key of candidateKeys) {
+      if (typeof obj[key] === 'string') return obj[key] as string
+    }
+  }
+  return fallback
+}
+
 export function BrandPromise({ content }: BrandPromiseProps = {}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -48,11 +61,16 @@ export function BrandPromise({ content }: BrandPromiseProps = {}) {
     },
   ];
 
-  const promises = content?.promises?.map(p => ({
-    icon: p.icon ? (iconMap[p.icon] || MapPin) : MapPin,
-    title: p.title || "",
-    description: p.description || "",
-  })) || defaultPromises;
+  const normalizedPromises = (content?.promises ?? []).map(p => {
+    const iconKey = getStringValue(p.icon, 'MapPin')
+    return {
+      icon: iconMap[iconKey] || MapPin,
+      title: getStringValue(p.title),
+      description: getStringValue(p.description),
+    }
+  }).filter(p => p.title || p.description)
+
+  const promises = normalizedPromises.length ? normalizedPromises : defaultPromises;
 
   return (
     <section ref={ref} className="py-24 bg-[#F9F9F6]">
