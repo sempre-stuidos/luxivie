@@ -17,6 +17,17 @@ export default async function Home({ searchParams }: HomeProps) {
   // Query parameter takes precedence to support multi-tenant previews
   const businessSlug = params.business || process.env.NEXT_PUBLIC_ORG_SLUG || 'default'
   
+  // Log business slug source for debugging
+  if (typeof window === 'undefined') {
+    // Server-side logging
+    console.log('[page.tsx] Business slug resolved:', {
+      fromQueryParam: params.business,
+      fromEnv: process.env.NEXT_PUBLIC_ORG_SLUG,
+      finalBusinessSlug: businessSlug,
+      pageSlug,
+    })
+  }
+  
   // Get the page
   const page = await getPageBySlug(businessSlug, pageSlug)
   
