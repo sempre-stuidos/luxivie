@@ -20,8 +20,8 @@ export interface PageSection {
   label: string
   component: string
   position: number
-  published_content: Record<string, any>
-  draft_content: Record<string, any>
+  published_content: Record<string, unknown>
+  draft_content: Record<string, unknown>
   status: 'published' | 'dirty' | 'draft'
   created_at: string
   updated_at: string
@@ -38,11 +38,13 @@ export async function getPageBySlug(
     const supabase = await createServerSupabaseClient()
     
     // First get business by slug (NOT organizations table)
-    const { data: business, error: businessError } = await supabase
+    // Use .limit(1) instead of .single() to handle RLS better
+    // If RLS blocks access, .single() throws an error, but .limit(1) returns empty array
+    const { data: businesses, error: businessError } = await supabase
       .from('businesses')
       .select('id')
       .eq('slug', businessSlug)
-      .single()
+      .limit(1)
 
     if (businessError) {
       console.error('[getPageBySlug] Business lookup error:', {
@@ -50,14 +52,20 @@ export async function getPageBySlug(
         error: businessError.message,
         code: businessError.code,
         details: businessError.details,
+        hint: businessError.hint,
       })
       return null
     }
 
-    if (!business) {
-      console.error('[getPageBySlug] Business not found:', businessSlug)
+    if (!businesses || businesses.length === 0) {
+      console.error('[getPageBySlug] Business not found (RLS may be blocking):', {
+        businessSlug,
+        businessesReturned: businesses?.length || 0,
+      })
       return null
     }
+
+    const business = businesses[0]
 
     // Then get page by slug for this business
     const { data: page, error: pageError } = await supabase

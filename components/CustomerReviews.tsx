@@ -108,7 +108,7 @@ export function CustomerReviews({ content }: CustomerReviewsProps = {}) {
                 </div>
 
                 {/* Quote */}
-                <p className="text-gray-700 italic">"{review.quote || ""}"</p>
+                <p className="text-gray-700 italic">&ldquo;{review.quote || ''}&rdquo;</p>
 
                 {/* Author */}
                 <div className="flex items-center gap-4 pt-4 border-t border-gray-300">

@@ -86,22 +86,6 @@ export function HeroSection({ content }: HeroSectionProps = {}) {
 
   const badge = getObjectValue(normalizedContent?.badge, { icon: 'Leaf', text: 'Made in Canada' });
   
-  // Check if content has meaningful data (not just empty object or empty strings)
-  const hasMeaningfulContent = React.useMemo(() => {
-    if (!normalizedContent || typeof normalizedContent !== 'object') return false
-    const keys = Object.keys(normalizedContent)
-    if (keys.length === 0) return false
-    // Check if at least one key has a non-empty value
-    return keys.some(key => {
-      const value = normalizedContent[key]
-      if (value === null || value === undefined) return false
-      if (typeof value === 'string' && value.trim() !== '') return true
-      if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0) return true
-      if (Array.isArray(value) && value.length > 0) return true
-      return false
-    })
-  }, [normalizedContent])
-  
   const titleValue = getStringValue(normalizedContent?.title)
   const title = titleValue || 'Clean Beauty That Works—Made With Care in Canada';
   const subtitleValue = getStringValue(normalizedContent?.subtitle)

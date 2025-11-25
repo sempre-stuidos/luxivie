@@ -37,9 +37,9 @@ export function CanvasEditorHandler({ sections }: CanvasEditorHandlerProps) {
     sections.forEach((section) => {
       const sectionElement = document.querySelector(`[data-section-key="${section.key}"]`)
       if (sectionElement) {
-        // Get section key from element's data attribute as fallback
-        const elementKey = sectionElement.getAttribute('data-section-key') || section.key
-        const elementId = sectionElement.getAttribute('data-section-id') || section.id
+        // Get section key from element's data attribute as fallback (for potential future use)
+        // const elementKey = sectionElement.getAttribute('data-section-key') || section.key
+        // const elementId = sectionElement.getAttribute('data-section-id') || section.id
         
         // Add click listener for section (only if not clicking on a component)
         const sectionClickHandler = (e: Event) => {

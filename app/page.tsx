@@ -5,7 +5,7 @@ import { getPageBySlug, getPageSections } from "@/lib/pages";
 import { validatePreviewToken } from "@/lib/preview";
 
 interface HomeProps {
-  searchParams: Promise<{ token?: string; page?: string }>
+  searchParams: Promise<{ token?: string; page?: string; business?: string }>
 }
 
 export default async function Home({ searchParams }: HomeProps) {
@@ -13,8 +13,9 @@ export default async function Home({ searchParams }: HomeProps) {
   const previewToken = params.token
   const pageSlug = params.page || 'home'
   
-  // Get business slug from environment (this is the business slug, not org slug)
-  const businessSlug = process.env.NEXT_PUBLIC_ORG_SLUG || 'default'
+  // Get business slug from query parameter (for iframe previews) or environment variable
+  // Query parameter takes precedence to support multi-tenant previews
+  const businessSlug = params.business || process.env.NEXT_PUBLIC_ORG_SLUG || 'default'
   
   // Get the page
   const page = await getPageBySlug(businessSlug, pageSlug)
@@ -50,15 +51,16 @@ export default async function Home({ searchParams }: HomeProps) {
       <Navigation />
       {sections.map((section) => {
         // Helper function to check if content has meaningful data
-        const hasContent = (content: any): boolean => {
+        const hasContent = (content: unknown): boolean => {
           if (!content) return false
           if (typeof content !== 'object') return false
           if (Array.isArray(content)) return content.length > 0
-          const keys = Object.keys(content)
+          const contentObj = content as Record<string, unknown>
+          const keys = Object.keys(contentObj)
           if (keys.length === 0) return false
           // Check if at least one key has a non-empty value
           return keys.some(key => {
-            const value = content[key]
+            const value = contentObj[key]
             if (value === null || value === undefined) return false
             if (typeof value === 'string' && value.trim() === '') return false
             if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) return false
@@ -68,7 +70,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
         // When in draft mode, prioritize draft_content; when in published mode, use published_content
         // Only fall back if the primary content is empty/null or has no meaningful data
-        let content: Record<string, any>
+        let content: Record<string, unknown>
         if (resolvedUseDraft) {
           // In draft/preview mode: try draft_content first, fall back to published_content
           if (hasContent(section.draft_content)) {

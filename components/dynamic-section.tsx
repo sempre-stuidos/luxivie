@@ -11,7 +11,7 @@ import { normalizeContent } from '@/lib/normalize-content'
 
 interface DynamicSectionProps {
   component: string
-  content: Record<string, any>
+  content: Record<string, unknown>
 }
 
 export default function DynamicSection({ component, content }: DynamicSectionProps) {
@@ -27,7 +27,7 @@ export default function DynamicSection({ component, content }: DynamicSectionPro
   
   // For HeroSection, be more lenient with normalization - preserve the content structure
   // Other sections can use full normalization
-  let normalizedContent: Record<string, any>
+  let normalizedContent: Record<string, unknown>
   
   if (component === 'HeroSection') {
     // For HeroSection, skip normalization entirely - pass content as-is
@@ -40,7 +40,7 @@ export default function DynamicSection({ component, content }: DynamicSectionPro
       if (contentKeys.length === 2 && contentKeys.includes('icon') && contentKeys.includes('text')) {
         console.warn('[DynamicSection] HeroSection content appears to be just badge object, not full content:', content)
         // This shouldn't happen, but if it does, wrap it back
-        normalizedContent = { badge: content } as Record<string, any>
+        normalizedContent = { badge: content } as Record<string, unknown>
       } else {
         // Content looks correct, use it as-is but handle title unwrapping
         normalizedContent = Object.fromEntries(
@@ -55,7 +55,7 @@ export default function DynamicSection({ component, content }: DynamicSectionPro
             // Everything else stays as-is
             return [key, value]
           })
-        ) as Record<string, any>
+        ) as Record<string, unknown>
       }
     } else {
       normalizedContent = content || {}
@@ -72,7 +72,7 @@ export default function DynamicSection({ component, content }: DynamicSectionPro
     }
   } else {
     // For other sections, use full normalization
-    normalizedContent = normalizeContent(content) as Record<string, any>
+    normalizedContent = normalizeContent(content) as Record<string, unknown>
   }
 
   switch (component) {
