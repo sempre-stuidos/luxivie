@@ -45,9 +45,19 @@ export default async function Home({ searchParams }: HomeProps) {
 
   // Validate preview token if provided
   let useDraft = false
+  let tokenValid = false
   if (previewToken) {
     const validation = await validatePreviewToken(previewToken, undefined, page.id)
     useDraft = validation.valid
+    tokenValid = validation.valid
+    if (typeof window === 'undefined') {
+      console.log('[page.tsx] Preview token validation:', {
+        token: previewToken.substring(0, 8) + '...',
+        valid: validation.valid,
+        error: validation.error,
+        useDraft,
+      })
+    }
   }
 
   // Get sections for this page
@@ -56,6 +66,16 @@ export default async function Home({ searchParams }: HomeProps) {
     useDraft,
     previewToken
   )
+
+  if (typeof window === 'undefined') {
+    console.log('[page.tsx] Content mode resolved:', {
+      previewToken: previewToken ? previewToken.substring(0, 8) + '...' : null,
+      tokenValid,
+      useDraft,
+      resolvedUseDraft,
+      sectionsCount: sections.length,
+    })
+  }
 
   return (
     <div className="min-h-screen bg-[#F9F9F6]">
@@ -79,57 +99,56 @@ export default async function Home({ searchParams }: HomeProps) {
           })
         }
 
-        // When in draft mode, prioritize draft_content; when in published mode, use published_content
-        // Only fall back if the primary content is empty/null or has no meaningful data
+        // Content selection: Simple and consistent logic
+        // When in draft mode (preview token valid), use draft_content
+        // When in published mode (no token or invalid token), use published_content
         let content: Record<string, unknown>
-        if (resolvedUseDraft) {
-          // In draft/preview mode: try draft_content first, fall back to published_content
+        const isDraftMode = resolvedUseDraft
+        
+        if (isDraftMode) {
+          // Draft mode: Use draft_content if it exists and has content, otherwise fall back to published_content
           if (hasContent(section.draft_content)) {
-            content = section.draft_content
+            content = section.draft_content as Record<string, unknown>
           } else if (hasContent(section.published_content)) {
-            content = section.published_content
+            content = section.published_content as Record<string, unknown>
           } else {
             content = {}
           }
         } else {
-          // In published mode: try published_content first, fall back to draft_content
+          // Published mode: Use published_content if it exists and has content, otherwise fall back to draft_content
           if (hasContent(section.published_content)) {
-            content = section.published_content
+            content = section.published_content as Record<string, unknown>
           } else if (hasContent(section.draft_content)) {
-            content = section.draft_content
+            content = section.draft_content as Record<string, unknown>
           } else {
             content = {}
           }
         }
 
-        // Special handling for HeroSection: if content looks like just a badge object, 
-        // it means the content was incorrectly extracted - use published_content as fallback
+        // Debug logging for HeroSection to track content selection
         if (section.component === 'HeroSection') {
-          const contentKeys = Object.keys(content)
-          // If content only has 'icon' and 'text', it's just the badge, not full content
-          if (contentKeys.length === 2 && contentKeys.includes('icon') && contentKeys.includes('text')) {
-            console.warn('[page.tsx] HeroSection content appears to be just badge, using published_content fallback')
-            // Try to get the full content from published_content
-            if (hasContent(section.published_content)) {
-              content = section.published_content
-            } else if (hasContent(section.draft_content) && Object.keys(section.draft_content).length > 2) {
-              content = section.draft_content
-            }
-          }
-        }
-
-        // Debug logging for HeroSection in iframe context
-        if (section.component === 'HeroSection' && previewToken) {
-          console.log('[page.tsx] HeroSection content selection:', {
+          const logData = {
             sectionKey: section.key,
-            resolvedUseDraft,
+            isDraftMode,
             hasDraftContent: hasContent(section.draft_content),
             hasPublishedContent: hasContent(section.published_content),
-            draftContentKeys: section.draft_content ? Object.keys(section.draft_content) : [],
-            publishedContentKeys: section.published_content ? Object.keys(section.published_content) : [],
-            selectedContentKeys: Object.keys(content),
-            selectedContent: content
-          })
+            draftBadge: section.draft_content && typeof section.draft_content === 'object' && 'badge' in section.draft_content 
+              ? (section.draft_content as Record<string, unknown>).badge 
+              : null,
+            draftTitle: section.draft_content && typeof section.draft_content === 'object' && 'title' in section.draft_content 
+              ? (section.draft_content as Record<string, unknown>).title 
+              : null,
+            publishedBadge: section.published_content && typeof section.published_content === 'object' && 'badge' in section.published_content 
+              ? (section.published_content as Record<string, unknown>).badge 
+              : null,
+            publishedTitle: section.published_content && typeof section.published_content === 'object' && 'title' in section.published_content 
+              ? (section.published_content as Record<string, unknown>).title 
+              : null,
+            selectedBadge: content && 'badge' in content ? content.badge : null,
+            selectedTitle: content && 'title' in content ? content.title : null,
+            previewToken: previewToken ? previewToken.substring(0, 8) + '...' : null,
+          }
+          console.log('[page.tsx] HeroSection content selection:', logData)
         }
 
         return (

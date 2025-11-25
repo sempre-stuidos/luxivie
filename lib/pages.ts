@@ -37,10 +37,7 @@ export async function getPageBySlug(
   try {
     const supabase = await createServerSupabaseClient()
     
-    // First get business by slug (NOT organizations table)
-    // Use .limit(1) instead of .single() to handle RLS better
-    // If RLS blocks access, .single() throws an error, but .limit(1) returns empty array
-    // Select all fields to verify we get the correct business
+    // Get business by slug - this is the source of truth
     const { data: businesses, error: businessError } = await supabase
       .from('businesses')
       .select('id, name, slug')
@@ -52,109 +49,30 @@ export async function getPageBySlug(
         businessSlug,
         error: businessError.message,
         code: businessError.code,
-        details: businessError.details,
-        hint: businessError.hint,
       })
       return null
     }
 
     if (!businesses || businesses.length === 0) {
-      console.error('[getPageBySlug] Business not found (RLS may be blocking):', {
+      console.error('[getPageBySlug] Business not found:', {
         businessSlug,
-        businessesReturned: businesses?.length || 0,
+        pagesReturned: businesses?.length || 0,
       })
       return null
     }
 
     const business = businesses[0]
     
-    // Validate that we got a valid business ID
-    if (!business || !business.id) {
-      console.error('[getPageBySlug] Invalid business returned from lookup:', {
+    // Validate the business result
+    if (!business?.id || business.slug !== businessSlug) {
+      console.error('[getPageBySlug] Invalid business returned:', {
         businessSlug,
-        business,
-        businessesReturned: businesses?.length || 0,
+        returnedBusiness: business,
       })
       return null
     }
 
-    // Validate that the returned business slug matches what we queried for
-    // This is critical to catch cases where RLS or caching returns wrong data
-    if (business.slug !== businessSlug) {
-      console.error('[getPageBySlug] Business slug mismatch - wrong business returned:', {
-        businessSlug,
-        returnedBusinessId: business.id,
-        returnedBusinessSlug: business.slug,
-        returnedBusinessName: business.name,
-        allBusinessesReturned: businesses,
-      })
-      return null
-    }
-
-    // Verify the business ID actually exists in the database by querying by slug again
-    // This is a defensive check to ensure we're not using a stale or invalid ID
-    // Query by slug again (not by ID) to ensure we get the correct business
-    const { data: businessVerify, error: verifyError } = await supabase
-      .from('businesses')
-      .select('id, name, slug')
-      .eq('slug', businessSlug)
-      .limit(1)
-
-    if (verifyError) {
-      console.error('[getPageBySlug] Business verification error (query by slug):', {
-        businessSlug,
-        businessId: business.id,
-        error: verifyError.message,
-        code: verifyError.code,
-      })
-      return null
-    }
-
-    if (!businessVerify || businessVerify.length === 0) {
-      console.error('[getPageBySlug] Business not found on verification query:', {
-        businessSlug,
-        businessId: business.id,
-        businessReturnedFromLookup: business,
-      })
-      return null
-    }
-
-    // Verify the business ID from verification matches the original lookup
-    // If they don't match, something is wrong (caching, RLS issue, etc.)
-    if (businessVerify[0].id !== business.id) {
-      console.error('[getPageBySlug] Business ID mismatch between lookup and verification:', {
-        businessSlug,
-        originalBusinessId: business.id,
-        verifiedBusinessId: businessVerify[0].id,
-        originalBusiness: business,
-        verifiedBusiness: businessVerify[0],
-      })
-      // Use the verified business ID instead of the original (more reliable)
-      return null
-    }
-
-    // Double-check the verified business slug matches
-    if (businessVerify[0].slug !== businessSlug) {
-      console.error('[getPageBySlug] Verified business slug mismatch:', {
-        businessSlug,
-        businessId: business.id,
-        verifiedBusinessSlug: businessVerify[0].slug,
-        verifiedBusinessName: businessVerify[0].name,
-      })
-      return null
-    }
-
-    // Log successful business lookup for debugging
-    console.log('[getPageBySlug] Business lookup successful:', {
-      businessSlug,
-      businessId: business.id,
-      businessName: businessVerify[0].name,
-      verifiedSlug: businessVerify[0].slug,
-    })
-
-    // Then get page by slug for this business
-    // Use .limit(1) instead of .single() to handle RLS better
-    // If RLS blocks access, .single() throws an error, but .limit(1) returns empty array
+    // Get page by slug for this business
     const { data: pages, error: pageError } = await supabase
       .from('pages')
       .select('*')
@@ -215,6 +133,14 @@ export async function getPageSections(
     if (previewToken) {
       const validation = await validatePreviewToken(previewToken, undefined, pageId)
       shouldUseDraft = validation.valid
+      console.log('[getPageSections] Preview token validation:', {
+        pageId,
+        tokenPreview: previewToken.substring(0, 8) + '...',
+        valid: validation.valid,
+        error: validation.error,
+        shouldUseDraft,
+        originalUseDraft: useDraft,
+      })
     }
 
     const { data, error } = await supabase
@@ -224,11 +150,12 @@ export async function getPageSections(
       .order('position', { ascending: true })
 
     if (error) {
-      console.error('Error fetching sections:', error)
+      console.error('[getPageSections] Error fetching sections:', error)
       return { sections: [], useDraft: shouldUseDraft }
     }
 
     if (!data) {
+      console.warn('[getPageSections] No sections data returned:', { pageId })
       return { sections: [], useDraft: shouldUseDraft }
     }
 
@@ -236,6 +163,15 @@ export async function getPageSections(
     
     if (shouldUseDraft) {
       // When previewing, return sections exactly as stored so the caller can use draft_content directly
+      console.log('[getPageSections] Returning draft sections:', {
+        pageId,
+        sectionsCount: sections.length,
+        heroSection: sections.find(s => s.component === 'HeroSection') ? {
+          key: sections.find(s => s.component === 'HeroSection')?.key,
+          hasDraftContent: !!sections.find(s => s.component === 'HeroSection')?.draft_content,
+          hasPublishedContent: !!sections.find(s => s.component === 'HeroSection')?.published_content,
+        } : null,
+      })
       return { sections, useDraft: true }
     }
 
