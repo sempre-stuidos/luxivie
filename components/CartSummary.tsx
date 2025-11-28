@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { Button } from "./ui/button";
 import { Minus, Plus, X } from "lucide-react";
 import { motion } from "framer-motion";
 

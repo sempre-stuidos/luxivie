@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Leaf } from "lucide-react";
 
 export default function CheckoutPage() {
-    const handleFormSubmit = (data: any) => {
+    const handleFormSubmit = (data: unknown) => {
         console.log("Order submitted:", data);
         // Handle order submission here
     };

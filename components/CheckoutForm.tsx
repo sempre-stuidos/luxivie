@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, CreditCard, Lock, ChevronDown, ArrowRight } from "lucide-react";
+import { MapPin, CreditCard, Lock, ChevronDown } from "lucide-react";
 
 interface CheckoutFormProps {
     onSubmit?: (data: FormData) => void;
