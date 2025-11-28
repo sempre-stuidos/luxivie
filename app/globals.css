@@ -2143,3 +2143,9 @@ html {
   inherits: false;
   initial-value: 1;
 }
+
+@layer utilities {
+  .py-3 {
+    padding-block: calc(var(--spacing) * 3);
+  }
+}
