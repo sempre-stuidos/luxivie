@@ -63,7 +63,9 @@ export function OrderSummary({
 
                 {/* Cart Items */}
                 <div className="space-y-6 mb-8">
-                    {items.map((item, index) => (
+                    {items.map((item, index) => {
+                        const itemTotal = item.price * item.quantity;
+                        return (
                         <motion.div
                             key={item.id}
                             initial={{ opacity: 0, y: 20 }}
@@ -79,12 +81,12 @@ export function OrderSummary({
                                 />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-base text-gray-900 font-normal pr-2">
+                                <div className="flex justify-between items-start mb-3 gap-6">
+                                    <h3 className="text-base text-gray-900 font-normal pr-2 flex-1">
                                         {item.name}
                                     </h3>
-                                    <p className="text-lg text-gray-900 font-normal whitespace-nowrap">
-                                        ${item.price.toFixed(2)}
+                                    <p className="text-lg text-gray-900 font-normal whitespace-nowrap ml-6 min-w-[90px] text-right">
+                                        ${itemTotal.toFixed(2)}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -117,7 +119,8 @@ export function OrderSummary({
                                 </div>
                             </div>
                         </motion.div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Price Summary */}
