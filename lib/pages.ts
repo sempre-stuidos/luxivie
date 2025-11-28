@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from './supabase'
+import { supabaseAdmin } from './supabase'
 import { validatePreviewToken } from './preview'
 
 export interface Page {
@@ -35,7 +35,8 @@ export async function getPageBySlug(
   pageSlug: string
 ): Promise<Page | null> {
   try {
-    const supabase = await createServerSupabaseClient()
+    // Use admin client to bypass RLS for public landing pages
+    const supabase = supabaseAdmin
     
     // Get business by slug - this is the source of truth
     const { data: businesses, error: businessError } = await supabase
@@ -126,7 +127,8 @@ export async function getPageSections(
   previewToken?: string
 ): Promise<{ sections: PageSection[]; useDraft: boolean }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    // Use admin client to bypass RLS for public landing pages
+    const supabase = supabaseAdmin
     
     // Validate preview token if provided
     let shouldUseDraft = useDraft

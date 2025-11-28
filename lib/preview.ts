@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from './supabase'
+import { supabaseAdmin } from './supabase'
 
 export interface PreviewToken {
   id: string
@@ -20,7 +20,8 @@ export async function validatePreviewToken(
   sectionId?: string
 ): Promise<{ valid: boolean; token?: PreviewToken; error?: string }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    // Use admin client to bypass RLS for preview token validation
+    const supabase = supabaseAdmin
     
     const { data, error } = await supabase
       .from('preview_tokens')

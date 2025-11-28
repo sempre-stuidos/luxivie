@@ -19,7 +19,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 })
 
-// Server-side Supabase client
+// Server-side Supabase client with service role key (bypasses RLS)
+// For public landing pages, we need to bypass RLS to read pages and businesses
+export const supabaseAdmin = createClient(
+  supabaseUrl,
+  process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
+
+// Server-side Supabase client (for authenticated requests)
 // For public landing pages, we only need to read cookies, not set them
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies()
