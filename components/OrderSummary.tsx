@@ -80,7 +80,7 @@ export function OrderSummary({
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 w-full">
                                 <div className="flex justify-between items-start mb-3 gap-6">
                                     <h3 className="text-base text-gray-900 font-normal pr-2 flex-1">
                                         {item.name}

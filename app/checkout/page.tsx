@@ -26,8 +26,8 @@ export default function CheckoutPage() {
                 <Leaf className="w-96 h-96 text-[#BFC8B3]" />
             </motion.div>
 
-            <div className="relative pt-32 pb-20">
-                <div className="container mx-auto px-4 py-20">
+            <div className="relative pt-40 pb-20">
+                <div className="container mx-auto px-4" style={{ paddingTop: '120px', paddingBottom: '20px' }}>
                     {/* Page Title */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}

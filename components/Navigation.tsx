@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Leaf, Menu, X, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export function Navigation() {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(0);
@@ -79,7 +81,7 @@ export function Navigation() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <motion.a
-            href="#"
+            href="/"
             className="flex items-center gap-2 group"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
@@ -118,6 +120,7 @@ export function Navigation() {
                 variant="ghost"
                 size="icon"
                 className="relative hover:bg-[#BFC8B3]/20"
+                onClick={() => router.push("/checkout")}
               >
                 <ShoppingBag className="w-5 h-5 text-gray-700" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#BFC8B3] rounded-full text-xs text-white flex items-center justify-center">

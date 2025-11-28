@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, CreditCard, Lock, ChevronDown } from "lucide-react";
+import { MapPin, CreditCard, Lock, ChevronDown, ArrowRight } from "lucide-react";
 
 interface CheckoutFormProps {
     onSubmit?: (data: FormData) => void;
@@ -212,7 +212,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                         >
                             <button
                                 type="submit"
-                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-2 h-9 w-full"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-6 h-9 w-full"
                             >
                                 Payment Details
                             </button>
@@ -326,7 +326,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                         >
                             <button
                                 type="submit"
-                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-2 h-9 w-full"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-6 h-9 w-full"
                             >
                                 Complete Order
                             </button>
