@@ -143,8 +143,8 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-6">
-                                    <div>
+                                <div className="flex gap-6">
+                                    <div className="flex-1">
                                         <label htmlFor="city" className="block text-base text-gray-700 mb-3 font-normal">
                                             City
                                         </label>
@@ -159,7 +159,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                                             onChange={handleChange}
                                         />
                                     </div>
-                                    <div>
+                                    <div className="flex-1">
                                         <label htmlFor="province" className="block text-base text-gray-700 mb-3 font-normal">
                                             Province
                                         </label>
@@ -185,7 +185,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                                             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className="flex-1">
                                         <label htmlFor="postalCode" className="block text-base text-gray-700 mb-3 font-normal">
                                             Postal Code
                                         </label>
@@ -212,7 +212,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                         >
                             <button
                                 type="submit"
-                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-4 w-full"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-2 h-9 w-full"
                             >
                                 Payment Details
                             </button>
@@ -276,8 +276,8 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div>
+                                <div className="flex gap-6">
+                                    <div className="flex-1">
                                         <label htmlFor="expiryDate" className="block text-base text-gray-700 mb-3 font-normal">
                                             Expiry Date
                                         </label>
@@ -293,7 +293,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                                             onChange={handleChange}
                                         />
                                     </div>
-                                    <div>
+                                    <div className="flex-1">
                                         <label htmlFor="cvv" className="block text-base text-gray-700 mb-3 font-normal">
                                             CVV
                                         </label>
@@ -326,7 +326,7 @@ export function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                         >
                             <button
                                 type="submit"
-                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-4 w-full"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8 py-2 h-9 w-full"
                             >
                                 Complete Order
                             </button>
