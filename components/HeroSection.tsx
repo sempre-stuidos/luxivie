@@ -36,67 +36,17 @@ const iconMap: Record<string, typeof Leaf> = {
 };
 
 export function HeroSection({ content }: HeroSectionProps = {}) {
-  // Safely extract values, handling cases where content might be incorrectly structured
-  const getStringValue = (value: unknown): string => {
-    if (typeof value === 'string') return value
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      // If it's an object, try to extract a string value (fallback for incorrectly structured data)
-      const obj = value as Record<string, unknown>
-      if (typeof obj.value === 'string') return obj.value
-      if (typeof obj.text === 'string') return obj.text
-      if (typeof obj.label === 'string') return obj.label
-    }
-    return ''
-  }
-
-  const getObjectValue = <T,>(value: unknown, defaultValue: T): T => {
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      return value as T
-    }
-    return defaultValue
-  }
-
-  // Ensure content is an object, not a string or other type
-  const normalizedContent = React.useMemo(() => {
-    if (!content) {
-      console.warn('[HeroSection] No content provided')
-      return {}
-    }
-    if (typeof content === 'string') {
-      console.warn('[HeroSection] Content is a string, expected object:', content)
-      return {}
-    }
-    if (typeof content === 'object' && !Array.isArray(content)) {
-      const contentObj = content as Record<string, unknown>
-      // Debug: log content in iframe context
-      if (typeof window !== 'undefined' && window.parent !== window) {
-        console.log('[HeroSection] Content in iframe:', {
-          keys: Object.keys(contentObj),
-          hasTitle: !!contentObj.title,
-          hasSubtitle: !!contentObj.subtitle,
-          hasBadge: !!contentObj.badge,
-          content: contentObj
-        })
-      }
-      return contentObj
-    }
-    console.warn('[HeroSection] Content is not an object:', typeof content, content)
-    return {}
-  }, [content])
-
-  const badge = getObjectValue(normalizedContent?.badge, { icon: 'Leaf', text: 'Made in Canada' });
+  // Content structure is now guaranteed by Zod validation
+  // No need for defensive unwrapping - structure is always flat and correct
   
-  const titleValue = getStringValue(normalizedContent?.title)
-  const title = titleValue || 'Clean Beauty That Works—Made With Care in Canada';
-  const subtitleValue = getStringValue(normalizedContent?.subtitle)
-  const subtitle = subtitleValue || 'Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.';
-  const primaryCta = getObjectValue(normalizedContent?.primaryCta, { label: 'Shop Bestsellers', href: '#products' });
-  const secondaryCta = getObjectValue(normalizedContent?.secondaryCta, { label: 'See Our Ingredients', href: '#ingredients' });
-  const heroImageValue = getStringValue(normalizedContent?.heroImage)
-  // Use null instead of empty string for images to avoid browser warnings
-  const heroImage = heroImageValue || 'https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080';
-  const accentImageValue = getStringValue(normalizedContent?.accentImage)
-  const accentImage = accentImageValue || 'https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080';
+  const badge = content?.badge || { icon: 'Leaf', text: 'Made in Canada' };
+  const title = content?.title || 'Clean Beauty That Works—Made With Care in Canada';
+  const subtitle = content?.subtitle || 'Luxurious hair care and skincare crafted with clean ingredients, gentle botanicals, and modern science.';
+  const primaryCta = content?.primaryCta || { label: 'Shop Bestsellers', href: '#products' };
+  const secondaryCta = content?.secondaryCta || { label: 'See Our Ingredients', href: '#ingredients' };
+  // heroImage and accentImage are always strings (URLs) per Zod schema
+  const heroImage = content?.heroImage || 'https://images.unsplash.com/photo-1739980213756-753aea153bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBiZWF1dHklMjBwcm9kdWN0JTIwbWFyYmxlfGVufDF8fHx8MTc2MzQ5NzkyN3ww&ixlib=rb-4.1.0&q=80&w=1080';
+  const accentImage = content?.accentImage || 'https://images.unsplash.com/photo-1763154045793-4be5374b3e70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldWNhbHlwdHVzJTIwbGVhdmVzJTIwbWluaW1hbGlzdHxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080';
   
   const BadgeIcon = badge.icon ? (iconMap[badge.icon] || Leaf) : Leaf;
   return (

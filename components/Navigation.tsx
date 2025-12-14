@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Leaf, Menu, X, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { useCart } from "@/contexts/CartContext";
 
 export function Navigation() {
   const router = useRouter();
+  const { getCartCount } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(0);
+  const cartCount = getCartCount();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -123,9 +126,11 @@ export function Navigation() {
                 onClick={() => router.push("/checkout")}
               >
                 <ShoppingBag className="w-5 h-5 text-gray-700" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#BFC8B3] rounded-full text-xs text-white flex items-center justify-center">
-                  0
-                </span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#BFC8B3] rounded-full text-xs text-white flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
               </Button>
             </motion.div>
             <motion.div
@@ -184,9 +189,13 @@ export function Navigation() {
                 <Button
                   variant="outline"
                   className="w-full border-2 border-gray-300 hover:border-[#BFC8B3] rounded-full"
+                  onClick={() => {
+                    router.push("/checkout");
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
                   <ShoppingBag className="w-4 h-4 mr-2" />
-                  Cart (0)
+                  Cart ({cartCount})
                 </Button>
                 <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-full">
                   Shop Now

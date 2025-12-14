@@ -1,53 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Minus, Plus, X } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
-interface CartItem {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-}
+export function OrderSummary() {
+    const { items, updateQuantity, removeFromCart } = useCart();
 
-interface OrderSummaryProps {
-    initialItems?: CartItem[];
-}
-
-export function OrderSummary({
-    initialItems = [
-        {
-            id: 1,
-            name: "Rosemary + Mint Hair Oil",
-            price: 34.99,
-            quantity: 1,
-            image: "https://images.unsplash.com/photo-1549049950-48d5887197a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb3NlbWFyeSUyMG9pbCUyMGJvdHRsZXxlbnwxfHx8fDE3NjM0OTc5Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-        },
-        {
-            id: 2,
-            name: "Rosemary Shampoo + Conditioner Set",
-            price: 49.99,
-            quantity: 1,
-            image: "https://images.unsplash.com/photo-1747858989102-cca0f4dc4a11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaGFtcG9vJTIwYm90dGxlJTIwY2xlYW58ZW58MXx8fHwxNzYzNDk3OTI4fDA&ixlib=rb-4.1.0&q=80&w=1080"
+    const handleUpdateQuantity = (id: string, delta: number) => {
+        const item = items.find(i => i.id === id);
+        if (item) {
+            const newQuantity = Math.max(1, item.quantity + delta);
+            updateQuantity(id, newQuantity);
         }
-    ]
-}: OrderSummaryProps) {
-    const [items, setItems] = useState<CartItem[]>(initialItems);
-
-    const updateQuantity = (id: number, delta: number) => {
-        setItems(items.map(item => {
-            if (item.id === id) {
-                const newQuantity = Math.max(1, item.quantity + delta);
-                return { ...item, quantity: newQuantity };
-            }
-            return item;
-        }));
     };
 
-    const removeItem = (id: number) => {
-        setItems(items.filter(item => item.id !== id));
+    const handleRemoveItem = (id: string) => {
+        removeFromCart(id);
     };
 
     const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -62,66 +31,75 @@ export function OrderSummary({
                 <h2 className="text-2xl text-gray-900 mb-8 font-normal">Order Summary</h2>
 
                 {/* Cart Items */}
-                <div className="space-y-6 mb-8">
-                    {items.map((item, index) => {
-                        const itemTotal = item.price * item.quantity;
-                        return (
-                        <motion.div
-                            key={item.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
-                            className="flex gap-4 items-start"
-                        >
-                            <div className="w-24 h-24 rounded-3xl overflow-hidden bg-gray-50 shrink-0">
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="flex-1 min-w-0 w-full">
-                                <div className="flex justify-between items-start mb-3 gap-6">
-                                    <h3 className="text-base text-gray-900 font-normal pr-2 flex-1">
-                                        {item.name}
-                                    </h3>
-                                    <p className="text-lg text-gray-900 font-normal whitespace-nowrap ml-6 min-w-[90px] text-right">
-                                        ${itemTotal.toFixed(2)}
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center bg-white border border-gray-200 rounded-full overflow-hidden">
-                                        <button
-                                            onClick={() => updateQuantity(item.id, -1)}
-                                            className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600"
-                                            aria-label="Decrease quantity"
-                                        >
-                                            <Minus className="w-4 h-4" />
-                                        </button>
-                                        <span className="px-4 py-2 text-sm text-gray-900 min-w-[40px] text-center">
-                                            {item.quantity}
-                                        </span>
-                                        <button
-                                            onClick={() => updateQuantity(item.id, 1)}
-                                            className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600"
-                                            aria-label="Increase quantity"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                        </button>
+                {items.length === 0 ? (
+                    <div className="text-center py-12">
+                        <p className="text-gray-600 mb-4">Your cart is empty</p>
+                        <a href="#products" className="text-[#8B9A7F] hover:underline">
+                            Continue shopping
+                        </a>
+                    </div>
+                ) : (
+                    <div className="space-y-6 mb-8">
+                        {items.map((item, index) => {
+                            const itemTotal = item.price * item.quantity;
+                            return (
+                                <motion.div
+                                    key={item.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                                    className="flex gap-4 items-start"
+                                >
+                                    <div className="w-24 h-24 rounded-3xl overflow-hidden bg-gray-50 shrink-0">
+                                        <img
+                                            src={item.image_url}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
-                                    <button
-                                        onClick={() => removeItem(item.id)}
-                                        className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-600"
-                                        aria-label="Remove item"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                        );
-                    })}
-                </div>
+                                    <div className="flex-1 min-w-0 w-full">
+                                        <div className="flex justify-between items-start mb-3 gap-6">
+                                            <h3 className="text-base text-gray-900 font-normal pr-2 flex-1">
+                                                {item.name}
+                                            </h3>
+                                            <p className="text-lg text-gray-900 font-normal whitespace-nowrap ml-6 min-w-[90px] text-right">
+                                                ${itemTotal.toFixed(2)}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex items-center bg-white border border-gray-200 rounded-full overflow-hidden">
+                                                <button
+                                                    onClick={() => handleUpdateQuantity(item.id, -1)}
+                                                    className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600"
+                                                    aria-label="Decrease quantity"
+                                                >
+                                                    <Minus className="w-4 h-4" />
+                                                </button>
+                                                <span className="px-4 py-2 text-sm text-gray-900 min-w-[40px] text-center">
+                                                    {item.quantity}
+                                                </span>
+                                                <button
+                                                    onClick={() => handleUpdateQuantity(item.id, 1)}
+                                                    className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600"
+                                                    aria-label="Increase quantity"
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                            <button
+                                                onClick={() => handleRemoveItem(item.id)}
+                                                className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                                                aria-label="Remove item"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                )}
 
                 {/* Price Summary */}
                 <motion.div
